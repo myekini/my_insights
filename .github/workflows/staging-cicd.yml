@@ -1,0 +1,94 @@
+name: CI/CD Pipeline for Frappe Insights - Staging
+
+on:
+  push:
+    branches:
+      - staging
+
+env:
+  AWS_REGION: us-east-1
+  AWS_ACCOUNT_ID: 816069156617
+  ECR_REPOSITORY: earnipay/dashboard
+  ECS_CLUSTER: frappe-cluster-staging
+  ECS_SERVICE: frappe-service-staging
+  IMAGE_TAG: ${{ github.sha }}  # Use commit SHA for traceability
+  DOCKER_COMPOSE_VERSION: 1.29.2
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository with submodules
+      - name: Checkout Repository with Submodules
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Install Docker and Docker Compose
+      - name: Install Docker and Docker Compose
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y git
+          curl -L https://github.com/docker/compose/releases/download/${{ env.DOCKER_COMPOSE_VERSION }}/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+          docker-compose version
+
+      # Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Login to Amazon ECR
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+
+      # Pull and Tag Docker Images
+      - name: Pull and Tag Docker Images
+        run: |
+          docker pull frappe/bench:latest
+          docker pull mariadb:10.8
+          docker pull redis:alpine
+
+          docker tag frappe/bench:latest ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:frappe-staging-${{ env.IMAGE_TAG }}
+          docker tag mariadb:10.8 ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:mariadb-staging-${{ env.IMAGE_TAG }}
+          docker tag redis:alpine ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:redis-staging-${{ env.IMAGE_TAG }}
+
+      # Push Docker Images to ECR
+      - name: Push Docker Images to ECR
+        run: |
+          docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:frappe-staging-${{ env.IMAGE_TAG }}
+          docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:mariadb-staging-${{ env.IMAGE_TAG }}
+          docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:redis-staging-${{ env.IMAGE_TAG }}
+
+      # Clean up Docker images locally after pushing
+      - name: Clean up Docker Images
+        run: |
+          docker rmi frappe/bench:latest mariadb:10.8 redis:alpine || true
+
+      # Download ECS Task Definition for Staging
+      - name: Download ECS Task Definition
+        run: aws ecs describe-task-definition --task-definition frappe-service-staging --query taskDefinition > task-definition.json
+
+      # Update ECS Task Definition with New Image
+      - name: Update ECS Task Definition with New Image
+        id: update-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: frappe-insights-container
+          image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:frappe-staging-${{ env.IMAGE_TAG }}
+
+      # Deploy Updated ECS Task Definition to Staging
+      - name: Deploy ECS Task Definition to Staging
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.update-task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
