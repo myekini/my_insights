@@ -9,9 +9,9 @@ env:
   AWS_REGION: us-east-1
   AWS_ACCOUNT_ID: 816069156617
   ECR_REPOSITORY: earnipay/dashboard
-  ECS_CLUSTER: frappe-cluster-staging
-  ECS_SERVICE: frappe-service-staging
-  IMAGE_TAG: ${{ github.sha }}  # Use commit SHA for traceability
+  ECS_CLUSTER: earnipay-cluster
+  ECS_SERVICE: earnipay-service
+  IMAGE_TAG: ${{ github.sha }}
   DOCKER_COMPOSE_VERSION: 1.29.2
 
 jobs:
