@@ -1,13 +1,13 @@
-import os  # noqa: I001
-from aws_cdk import (
-    Stack,
-    aws_ec2 as ec2,
-    aws_ecr as ecr,
-    aws_ecs as ecs,
-    aws_efs as efs,
-    aws_logs as logs,
-)
+import os
+
+from aws_cdk import Stack
+from aws_cdk import aws_ec2 as ec2
+from aws_cdk import aws_ecr as ecr
+from aws_cdk import aws_ecs as ecs
+from aws_cdk import aws_efs as efs
+from aws_cdk import aws_logs as logs
 from constructs import Construct
+
 
 class MultiContainerEcsStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
@@ -31,7 +31,7 @@ class MultiContainerEcsStack(Stack):
 
         # Create an EFS file system for MariaDB persistence, within the default VPC
         file_system = efs.FileSystem(self, "MariaDbEfs",
-                                     vpc=vpc,  # Attach EFS to the default VPC
+                                     vpc=vpc,
                                      removal_policy=efs.RemovalPolicy.DESTROY)
 
         # Define a Fargate Task Definition

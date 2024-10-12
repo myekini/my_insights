@@ -6,3 +6,5 @@ app = cdk.App()
 MultiContainerEcsStack(app, "MultiContainerEcsStack",)
 
 app.synth()
+
+
