@@ -5,7 +5,7 @@ on:
     branches:
       - staging
     paths:
-      - 'ECS-cdk/**'  # Only trigger this job if files in the ECS-cdk directory change
+      - 'earnipay-cdk/**'
 
 jobs:
   deploy_infrastructure:
@@ -16,6 +16,14 @@ jobs:
       - name: Checkout Infra Directory
         uses: actions/checkout@v2
 
+      # Set up AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
       # Set up Python environment
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -25,8 +33,7 @@ jobs:
       # Install dependencies for CDK (specifically for Python CDK)
       - name: Install CDK Python Dependencies
         run: |
-          cd ECS-cdk
-          ls
+          cd earnipay-cdk
           pip install -r requirements.txt
 
       # Install AWS CDK CLI (global tool)
@@ -34,7 +41,7 @@ jobs:
         run: npm install -g aws-cdk
 
       # Deploy CDK Stack
-      - name: Deploy CDK Stack
-        working-directory: ECS-cdk
+      - name: Deploy CDK EarnipayCdkStack
+        working-directory: earnipay-cdk
         run: |
           cdk deploy --require-approval never
