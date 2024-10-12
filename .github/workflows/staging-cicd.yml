@@ -40,13 +40,24 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+      
+      # Pull required Docker images to avoid "no such image" errors
+      - name: Pull Required Docker Images
+        run: |
+          docker pull mariadb:10.8
+          docker pull redis:alpine
 
       # Build, Tag, and Push Docker Images
-      - name: Build, Tag, and Push Docker Images
-        id: build_and_tag_images
+      - name: Build Docker Images
+        id: build_images
         run: |
           cd docker
           docker-compose build
+          
+      # Build, Tag, and Push Docker Images
+      - name: Tag and Push Docker Images
+        id: tag_and_push_images
+        run: |
           docker tag frappe/bench:latest ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:frappe-staging-${{ github.sha }}
           docker tag mariadb:10.8 ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:mariadb-staging-${{ github.sha }}
           docker tag redis:alpine ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:redis-staging-${{ github.sha }}
