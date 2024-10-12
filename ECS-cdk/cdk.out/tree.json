@@ -1,0 +1,1022 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "MultiContainerEcsStack": {
+        "id": "MultiContainerEcsStack",
+        "path": "MultiContainerEcsStack",
+        "children": {
+          "DefaultVpc": {
+            "id": "DefaultVpc",
+            "path": "MultiContainerEcsStack/DefaultVpc",
+            "children": {
+              "PublicSubnet1": {
+                "id": "PublicSubnet1",
+                "path": "MultiContainerEcsStack/DefaultVpc/PublicSubnet1",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.162.1"
+                }
+              },
+              "PublicSubnet2": {
+                "id": "PublicSubnet2",
+                "path": "MultiContainerEcsStack/DefaultVpc/PublicSubnet2",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.162.1"
+                }
+              },
+              "PublicSubnet3": {
+                "id": "PublicSubnet3",
+                "path": "MultiContainerEcsStack/DefaultVpc/PublicSubnet3",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.162.1"
+                }
+              },
+              "PublicSubnet4": {
+                "id": "PublicSubnet4",
+                "path": "MultiContainerEcsStack/DefaultVpc/PublicSubnet4",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.162.1"
+                }
+              },
+              "PublicSubnet5": {
+                "id": "PublicSubnet5",
+                "path": "MultiContainerEcsStack/DefaultVpc/PublicSubnet5",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.162.1"
+                }
+              },
+              "PublicSubnet6": {
+                "id": "PublicSubnet6",
+                "path": "MultiContainerEcsStack/DefaultVpc/PublicSubnet6",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.162.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "2.162.1"
+            }
+          },
+          "EarnipayCluster": {
+            "id": "EarnipayCluster",
+            "path": "MultiContainerEcsStack/EarnipayCluster",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "MultiContainerEcsStack/EarnipayCluster/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
+                  "aws:cdk:cloudformation:props": {
+                    "clusterName": "earnipay-cluster"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnCluster",
+                  "version": "2.162.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecs.Cluster",
+              "version": "2.162.1"
+            }
+          },
+          "FrappeRepo": {
+            "id": "FrappeRepo",
+            "path": "MultiContainerEcsStack/FrappeRepo",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
+              "version": "2.162.1"
+            }
+          },
+          "MariaDbRepo": {
+            "id": "MariaDbRepo",
+            "path": "MultiContainerEcsStack/MariaDbRepo",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
+              "version": "2.162.1"
+            }
+          },
+          "RedisRepo": {
+            "id": "RedisRepo",
+            "path": "MultiContainerEcsStack/RedisRepo",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
+              "version": "2.162.1"
+            }
+          },
+          "MariaDbEfs": {
+            "id": "MariaDbEfs",
+            "path": "MultiContainerEcsStack/MariaDbEfs",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "MultiContainerEcsStack/MariaDbEfs/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EFS::FileSystem",
+                  "aws:cdk:cloudformation:props": {
+                    "encrypted": true,
+                    "fileSystemPolicy": {
+                      "Statement": [
+                        {
+                          "Action": [
+                            "elasticfilesystem:ClientRootAccess",
+                            "elasticfilesystem:ClientWrite"
+                          ],
+                          "Condition": {
+                            "Bool": {
+                              "elasticfilesystem:AccessedViaMountTarget": "true"
+                            }
+                          },
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": "*"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "fileSystemTags": [
+                      {
+                        "key": "Name",
+                        "value": "MultiContainerEcsStack/MariaDbEfs"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_efs.CfnFileSystem",
+                  "version": "2.162.1"
+                }
+              },
+              "EfsSecurityGroup": {
+                "id": "EfsSecurityGroup",
+                "path": "MultiContainerEcsStack/MariaDbEfs/EfsSecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "MultiContainerEcsStack/MariaDbEfs/EfsSecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "MultiContainerEcsStack/MariaDbEfs/EfsSecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "MultiContainerEcsStack/MariaDbEfs"
+                          }
+                        ],
+                        "vpcId": "vpc-03b464097bf99dc53"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "2.162.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "2.162.1"
+                }
+              },
+              "EfsMountTarget-PublicSubnet1": {
+                "id": "EfsMountTarget-PublicSubnet1",
+                "path": "MultiContainerEcsStack/MariaDbEfs/EfsMountTarget-PublicSubnet1",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
+                  "aws:cdk:cloudformation:props": {
+                    "fileSystemId": {
+                      "Ref": "MariaDbEfs9BCAE6B9"
+                    },
+                    "securityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "MariaDbEfsEfsSecurityGroup03B43D86",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnetId": "subnet-0b871618748442b21"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_efs.CfnMountTarget",
+                  "version": "2.162.1"
+                }
+              },
+              "EfsMountTarget-PublicSubnet2": {
+                "id": "EfsMountTarget-PublicSubnet2",
+                "path": "MultiContainerEcsStack/MariaDbEfs/EfsMountTarget-PublicSubnet2",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
+                  "aws:cdk:cloudformation:props": {
+                    "fileSystemId": {
+                      "Ref": "MariaDbEfs9BCAE6B9"
+                    },
+                    "securityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "MariaDbEfsEfsSecurityGroup03B43D86",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnetId": "subnet-00e4791e45aa3d63a"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_efs.CfnMountTarget",
+                  "version": "2.162.1"
+                }
+              },
+              "EfsMountTarget-PublicSubnet3": {
+                "id": "EfsMountTarget-PublicSubnet3",
+                "path": "MultiContainerEcsStack/MariaDbEfs/EfsMountTarget-PublicSubnet3",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
+                  "aws:cdk:cloudformation:props": {
+                    "fileSystemId": {
+                      "Ref": "MariaDbEfs9BCAE6B9"
+                    },
+                    "securityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "MariaDbEfsEfsSecurityGroup03B43D86",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnetId": "subnet-0d70efc4d8b4a780a"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_efs.CfnMountTarget",
+                  "version": "2.162.1"
+                }
+              },
+              "EfsMountTarget-PublicSubnet4": {
+                "id": "EfsMountTarget-PublicSubnet4",
+                "path": "MultiContainerEcsStack/MariaDbEfs/EfsMountTarget-PublicSubnet4",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
+                  "aws:cdk:cloudformation:props": {
+                    "fileSystemId": {
+                      "Ref": "MariaDbEfs9BCAE6B9"
+                    },
+                    "securityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "MariaDbEfsEfsSecurityGroup03B43D86",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnetId": "subnet-019690c6ff961b555"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_efs.CfnMountTarget",
+                  "version": "2.162.1"
+                }
+              },
+              "EfsMountTarget-PublicSubnet5": {
+                "id": "EfsMountTarget-PublicSubnet5",
+                "path": "MultiContainerEcsStack/MariaDbEfs/EfsMountTarget-PublicSubnet5",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
+                  "aws:cdk:cloudformation:props": {
+                    "fileSystemId": {
+                      "Ref": "MariaDbEfs9BCAE6B9"
+                    },
+                    "securityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "MariaDbEfsEfsSecurityGroup03B43D86",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnetId": "subnet-0c8c74a46d052534c"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_efs.CfnMountTarget",
+                  "version": "2.162.1"
+                }
+              },
+              "EfsMountTarget-PublicSubnet6": {
+                "id": "EfsMountTarget-PublicSubnet6",
+                "path": "MultiContainerEcsStack/MariaDbEfs/EfsMountTarget-PublicSubnet6",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
+                  "aws:cdk:cloudformation:props": {
+                    "fileSystemId": {
+                      "Ref": "MariaDbEfs9BCAE6B9"
+                    },
+                    "securityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "MariaDbEfsEfsSecurityGroup03B43D86",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnetId": "subnet-024216905f19ff2ad"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_efs.CfnMountTarget",
+                  "version": "2.162.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_efs.FileSystem",
+              "version": "2.162.1"
+            }
+          },
+          "EarnipayTask": {
+            "id": "EarnipayTask",
+            "path": "MultiContainerEcsStack/EarnipayTask",
+            "children": {
+              "TaskRole": {
+                "id": "TaskRole",
+                "path": "MultiContainerEcsStack/EarnipayTask/TaskRole",
+                "children": {
+                  "ImportTaskRole": {
+                    "id": "ImportTaskRole",
+                    "path": "MultiContainerEcsStack/EarnipayTask/TaskRole/ImportTaskRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.162.1"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "MultiContainerEcsStack/EarnipayTask/TaskRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.162.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.162.1"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "MultiContainerEcsStack/EarnipayTask/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
+                  "aws:cdk:cloudformation:props": {
+                    "containerDefinitions": [
+                      {
+                        "essential": true,
+                        "image": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "816069156617.dkr.ecr.us-east-1.",
+                              {
+                                "Ref": "AWS::URLSuffix"
+                              },
+                              "/earnipay/dashboard:latest"
+                            ]
+                          ]
+                        },
+                        "mountPoints": [
+                          {
+                            "containerPath": "/var/lib/mysql",
+                            "readOnly": false,
+                            "sourceVolume": "mariadb-data"
+                          }
+                        ],
+                        "name": "MariaDbContainer",
+                        "logConfiguration": {
+                          "logDriver": "awslogs",
+                          "options": {
+                            "awslogs-group": {
+                              "Ref": "EarnipayTaskMariaDbContainerLogGroup7391B6B2"
+                            },
+                            "awslogs-stream-prefix": "MariaDB",
+                            "awslogs-region": "us-east-1"
+                          }
+                        },
+                        "environment": [
+                          {
+                            "name": "MYSQL_ROOT_PASSWORD",
+                            "value": "123"
+                          }
+                        ]
+                      },
+                      {
+                        "essential": true,
+                        "image": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "816069156617.dkr.ecr.us-east-1.",
+                              {
+                                "Ref": "AWS::URLSuffix"
+                              },
+                              "/earnipay/dashboard:latest"
+                            ]
+                          ]
+                        },
+                        "name": "RedisContainer",
+                        "logConfiguration": {
+                          "logDriver": "awslogs",
+                          "options": {
+                            "awslogs-group": {
+                              "Ref": "EarnipayTaskRedisContainerLogGroup02106D37"
+                            },
+                            "awslogs-stream-prefix": "Redis",
+                            "awslogs-region": "us-east-1"
+                          }
+                        }
+                      },
+                      {
+                        "command": [
+                          "bash",
+                          "/workspace/init.sh"
+                        ],
+                        "essential": true,
+                        "image": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "816069156617.dkr.ecr.us-east-1.",
+                              {
+                                "Ref": "AWS::URLSuffix"
+                              },
+                              "/earnipay/dashboard:latest"
+                            ]
+                          ]
+                        },
+                        "name": "FrappeContainer",
+                        "portMappings": [
+                          {
+                            "containerPort": 8000,
+                            "protocol": "tcp"
+                          }
+                        ],
+                        "workingDirectory": "/home/frappe",
+                        "logConfiguration": {
+                          "logDriver": "awslogs",
+                          "options": {
+                            "awslogs-group": {
+                              "Ref": "EarnipayTaskFrappeContainerLogGroupA9C934B7"
+                            },
+                            "awslogs-stream-prefix": "Frappe",
+                            "awslogs-region": "us-east-1"
+                          }
+                        },
+                        "environment": [
+                          {
+                            "name": "SHELL",
+                            "value": "/bin/bash"
+                          }
+                        ]
+                      }
+                    ],
+                    "cpu": "1024",
+                    "executionRoleArn": {
+                      "Fn::GetAtt": [
+                        "EarnipayTaskExecutionRole04F989CF",
+                        "Arn"
+                      ]
+                    },
+                    "family": "MultiContainerEcsStackEarnipayTask6B82EED9",
+                    "memory": "2048",
+                    "networkMode": "awsvpc",
+                    "requiresCompatibilities": [
+                      "FARGATE"
+                    ],
+                    "taskRoleArn": {
+                      "Fn::GetAtt": [
+                        "EarnipayTaskTaskRole0B0CBA53",
+                        "Arn"
+                      ]
+                    },
+                    "volumes": [
+                      {
+                        "name": "mariadb-data",
+                        "efsVolumeConfiguration": {
+                          "filesystemId": {
+                            "Ref": "MariaDbEfs9BCAE6B9"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnTaskDefinition",
+                  "version": "2.162.1"
+                }
+              },
+              "MariaDbContainer": {
+                "id": "MariaDbContainer",
+                "path": "MultiContainerEcsStack/EarnipayTask/MariaDbContainer",
+                "children": {
+                  "LogGroup": {
+                    "id": "LogGroup",
+                    "path": "MultiContainerEcsStack/EarnipayTask/MariaDbContainer/LogGroup",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "MultiContainerEcsStack/EarnipayTask/MariaDbContainer/LogGroup/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                          "aws:cdk:cloudformation:props": {
+                            "retentionInDays": 7
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                          "version": "2.162.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                      "version": "2.162.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
+                  "version": "2.162.1"
+                }
+              },
+              "ExecutionRole": {
+                "id": "ExecutionRole",
+                "path": "MultiContainerEcsStack/EarnipayTask/ExecutionRole",
+                "children": {
+                  "ImportExecutionRole": {
+                    "id": "ImportExecutionRole",
+                    "path": "MultiContainerEcsStack/EarnipayTask/ExecutionRole/ImportExecutionRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.162.1"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "MultiContainerEcsStack/EarnipayTask/ExecutionRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.162.1"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "MultiContainerEcsStack/EarnipayTask/ExecutionRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "MultiContainerEcsStack/EarnipayTask/ExecutionRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "ecr:BatchCheckLayerAvailability",
+                                    "ecr:BatchGetImage",
+                                    "ecr:GetDownloadUrlForLayer"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "arn:aws:ecr:us-east-1:816069156617:repository/earnipay/dashboard"
+                                },
+                                {
+                                  "Action": "ecr:GetAuthorizationToken",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "EarnipayTaskFrappeContainerLogGroupA9C934B7",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "EarnipayTaskMariaDbContainerLogGroup7391B6B2",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "EarnipayTaskRedisContainerLogGroup02106D37",
+                                        "Arn"
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "EarnipayTaskExecutionRoleDefaultPolicyC8F142F6",
+                            "roles": [
+                              {
+                                "Ref": "EarnipayTaskExecutionRole04F989CF"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.162.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.162.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.162.1"
+                }
+              },
+              "RedisContainer": {
+                "id": "RedisContainer",
+                "path": "MultiContainerEcsStack/EarnipayTask/RedisContainer",
+                "children": {
+                  "LogGroup": {
+                    "id": "LogGroup",
+                    "path": "MultiContainerEcsStack/EarnipayTask/RedisContainer/LogGroup",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "MultiContainerEcsStack/EarnipayTask/RedisContainer/LogGroup/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                          "aws:cdk:cloudformation:props": {
+                            "retentionInDays": 7
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                          "version": "2.162.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                      "version": "2.162.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
+                  "version": "2.162.1"
+                }
+              },
+              "FrappeContainer": {
+                "id": "FrappeContainer",
+                "path": "MultiContainerEcsStack/EarnipayTask/FrappeContainer",
+                "children": {
+                  "LogGroup": {
+                    "id": "LogGroup",
+                    "path": "MultiContainerEcsStack/EarnipayTask/FrappeContainer/LogGroup",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "MultiContainerEcsStack/EarnipayTask/FrappeContainer/LogGroup/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                          "aws:cdk:cloudformation:props": {
+                            "retentionInDays": 7
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                          "version": "2.162.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                      "version": "2.162.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
+                  "version": "2.162.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecs.FargateTaskDefinition",
+              "version": "2.162.1"
+            }
+          },
+          "EarnipayService": {
+            "id": "EarnipayService",
+            "path": "MultiContainerEcsStack/EarnipayService",
+            "children": {
+              "Service": {
+                "id": "Service",
+                "path": "MultiContainerEcsStack/EarnipayService/Service",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::Service",
+                  "aws:cdk:cloudformation:props": {
+                    "cluster": {
+                      "Ref": "EarnipayClusterD6AD406F"
+                    },
+                    "deploymentConfiguration": {
+                      "maximumPercent": 200,
+                      "minimumHealthyPercent": 50
+                    },
+                    "desiredCount": 2,
+                    "enableEcsManagedTags": false,
+                    "launchType": "FARGATE",
+                    "networkConfiguration": {
+                      "awsvpcConfiguration": {
+                        "assignPublicIp": "ENABLED",
+                        "subnets": [
+                          "subnet-0b871618748442b21",
+                          "subnet-00e4791e45aa3d63a",
+                          "subnet-0d70efc4d8b4a780a",
+                          "subnet-019690c6ff961b555",
+                          "subnet-0c8c74a46d052534c",
+                          "subnet-024216905f19ff2ad"
+                        ],
+                        "securityGroups": [
+                          {
+                            "Fn::GetAtt": [
+                              "EarnipayServiceSecurityGroup86380017",
+                              "GroupId"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "serviceName": "earnipay-service",
+                    "taskDefinition": {
+                      "Ref": "EarnipayTask704054F6"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnService",
+                  "version": "2.162.1"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "MultiContainerEcsStack/EarnipayService/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "MultiContainerEcsStack/EarnipayService/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "MultiContainerEcsStack/EarnipayService/SecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": "vpc-03b464097bf99dc53"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "2.162.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "2.162.1"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "MultiContainerEcsStack/EarnipayService/ScalingRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.162.1"
+                }
+              },
+              "TaskCount": {
+                "id": "TaskCount",
+                "path": "MultiContainerEcsStack/EarnipayService/TaskCount",
+                "children": {
+                  "Target": {
+                    "id": "Target",
+                    "path": "MultiContainerEcsStack/EarnipayService/TaskCount/Target",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "MultiContainerEcsStack/EarnipayService/TaskCount/Target/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalableTarget",
+                          "aws:cdk:cloudformation:props": {
+                            "maxCapacity": 5,
+                            "minCapacity": 1,
+                            "resourceId": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "service/",
+                                  {
+                                    "Ref": "EarnipayClusterD6AD406F"
+                                  },
+                                  "/",
+                                  {
+                                    "Fn::GetAtt": [
+                                      "EarnipayServiceFD4C61E8",
+                                      "Name"
+                                    ]
+                                  }
+                                ]
+                              ]
+                            },
+                            "roleArn": "arn:aws:iam::816069156617:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService",
+                            "scalableDimension": "ecs:service:DesiredCount",
+                            "serviceNamespace": "ecs"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_applicationautoscaling.CfnScalableTarget",
+                          "version": "2.162.1"
+                        }
+                      },
+                      "CpuScaling": {
+                        "id": "CpuScaling",
+                        "path": "MultiContainerEcsStack/EarnipayService/TaskCount/Target/CpuScaling",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "MultiContainerEcsStack/EarnipayService/TaskCount/Target/CpuScaling/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyName": "MultiContainerEcsStackEarnipayServiceTaskCountTargetCpuScaling8E245284",
+                                "policyType": "TargetTrackingScaling",
+                                "scalingTargetId": {
+                                  "Ref": "EarnipayServiceTaskCountTargetCD2A0A9E"
+                                },
+                                "targetTrackingScalingPolicyConfiguration": {
+                                  "predefinedMetricSpecification": {
+                                    "predefinedMetricType": "ECSServiceAverageCPUUtilization"
+                                  },
+                                  "targetValue": 50
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_applicationautoscaling.CfnScalingPolicy",
+                              "version": "2.162.1"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_applicationautoscaling.TargetTrackingScalingPolicy",
+                          "version": "2.162.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_applicationautoscaling.ScalableTarget",
+                      "version": "2.162.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.ScalableTaskCount",
+                  "version": "2.162.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecs.FargateService",
+              "version": "2.162.1"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "MultiContainerEcsStack/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "MultiContainerEcsStack/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.162.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.1"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "MultiContainerEcsStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.162.1"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "MultiContainerEcsStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.162.1"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.162.1"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.1"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "2.162.1"
+    }
+  }
+}

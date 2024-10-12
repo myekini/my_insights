@@ -1,0 +1,638 @@
+{
+ "Resources": {
+  "EarnipayClusterD6AD406F": {
+   "Type": "AWS::ECS::Cluster",
+   "Properties": {
+    "ClusterName": "earnipay-cluster"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/EarnipayCluster/Resource"
+   }
+  },
+  "MariaDbEfs9BCAE6B9": {
+   "Type": "AWS::EFS::FileSystem",
+   "Properties": {
+    "Encrypted": true,
+    "FileSystemPolicy": {
+     "Statement": [
+      {
+       "Action": [
+        "elasticfilesystem:ClientRootAccess",
+        "elasticfilesystem:ClientWrite"
+       ],
+       "Condition": {
+        "Bool": {
+         "elasticfilesystem:AccessedViaMountTarget": "true"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "*"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "FileSystemTags": [
+     {
+      "Key": "Name",
+      "Value": "MultiContainerEcsStack/MariaDbEfs"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/MariaDbEfs/Resource"
+   }
+  },
+  "MariaDbEfsEfsSecurityGroup03B43D86": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MultiContainerEcsStack/MariaDbEfs/EfsSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "MultiContainerEcsStack/MariaDbEfs"
+     }
+    ],
+    "VpcId": "vpc-03b464097bf99dc53"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/MariaDbEfs/EfsSecurityGroup/Resource"
+   }
+  },
+  "MariaDbEfsEfsMountTargetPublicSubnet1A7D6721F": {
+   "Type": "AWS::EFS::MountTarget",
+   "Properties": {
+    "FileSystemId": {
+     "Ref": "MariaDbEfs9BCAE6B9"
+    },
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "MariaDbEfsEfsSecurityGroup03B43D86",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": "subnet-0b871618748442b21"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/MariaDbEfs/EfsMountTarget-PublicSubnet1"
+   }
+  },
+  "MariaDbEfsEfsMountTargetPublicSubnet284B7B87F": {
+   "Type": "AWS::EFS::MountTarget",
+   "Properties": {
+    "FileSystemId": {
+     "Ref": "MariaDbEfs9BCAE6B9"
+    },
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "MariaDbEfsEfsSecurityGroup03B43D86",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": "subnet-00e4791e45aa3d63a"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/MariaDbEfs/EfsMountTarget-PublicSubnet2"
+   }
+  },
+  "MariaDbEfsEfsMountTargetPublicSubnet3AFDE0464": {
+   "Type": "AWS::EFS::MountTarget",
+   "Properties": {
+    "FileSystemId": {
+     "Ref": "MariaDbEfs9BCAE6B9"
+    },
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "MariaDbEfsEfsSecurityGroup03B43D86",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": "subnet-0d70efc4d8b4a780a"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/MariaDbEfs/EfsMountTarget-PublicSubnet3"
+   }
+  },
+  "MariaDbEfsEfsMountTargetPublicSubnet49D40B1BB": {
+   "Type": "AWS::EFS::MountTarget",
+   "Properties": {
+    "FileSystemId": {
+     "Ref": "MariaDbEfs9BCAE6B9"
+    },
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "MariaDbEfsEfsSecurityGroup03B43D86",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": "subnet-019690c6ff961b555"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/MariaDbEfs/EfsMountTarget-PublicSubnet4"
+   }
+  },
+  "MariaDbEfsEfsMountTargetPublicSubnet5E35DC1AA": {
+   "Type": "AWS::EFS::MountTarget",
+   "Properties": {
+    "FileSystemId": {
+     "Ref": "MariaDbEfs9BCAE6B9"
+    },
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "MariaDbEfsEfsSecurityGroup03B43D86",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": "subnet-0c8c74a46d052534c"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/MariaDbEfs/EfsMountTarget-PublicSubnet5"
+   }
+  },
+  "MariaDbEfsEfsMountTargetPublicSubnet6204782E8": {
+   "Type": "AWS::EFS::MountTarget",
+   "Properties": {
+    "FileSystemId": {
+     "Ref": "MariaDbEfs9BCAE6B9"
+    },
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "MariaDbEfsEfsSecurityGroup03B43D86",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": "subnet-024216905f19ff2ad"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/MariaDbEfs/EfsMountTarget-PublicSubnet6"
+   }
+  },
+  "EarnipayTaskTaskRole0B0CBA53": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/EarnipayTask/TaskRole/Resource"
+   }
+  },
+  "EarnipayTask704054F6": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Environment": [
+       {
+        "Name": "MYSQL_ROOT_PASSWORD",
+        "Value": "123"
+       }
+      ],
+      "Essential": true,
+      "Image": {
+       "Fn::Join": [
+        "",
+        [
+         "816069156617.dkr.ecr.us-east-1.",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/earnipay/dashboard:latest"
+        ]
+       ]
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "EarnipayTaskMariaDbContainerLogGroup7391B6B2"
+        },
+        "awslogs-stream-prefix": "MariaDB",
+        "awslogs-region": "us-east-1"
+       }
+      },
+      "MountPoints": [
+       {
+        "ContainerPath": "/var/lib/mysql",
+        "ReadOnly": false,
+        "SourceVolume": "mariadb-data"
+       }
+      ],
+      "Name": "MariaDbContainer"
+     },
+     {
+      "Essential": true,
+      "Image": {
+       "Fn::Join": [
+        "",
+        [
+         "816069156617.dkr.ecr.us-east-1.",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/earnipay/dashboard:latest"
+        ]
+       ]
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "EarnipayTaskRedisContainerLogGroup02106D37"
+        },
+        "awslogs-stream-prefix": "Redis",
+        "awslogs-region": "us-east-1"
+       }
+      },
+      "Name": "RedisContainer"
+     },
+     {
+      "Command": [
+       "bash",
+       "/workspace/init.sh"
+      ],
+      "Environment": [
+       {
+        "Name": "SHELL",
+        "Value": "/bin/bash"
+       }
+      ],
+      "Essential": true,
+      "Image": {
+       "Fn::Join": [
+        "",
+        [
+         "816069156617.dkr.ecr.us-east-1.",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/earnipay/dashboard:latest"
+        ]
+       ]
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "EarnipayTaskFrappeContainerLogGroupA9C934B7"
+        },
+        "awslogs-stream-prefix": "Frappe",
+        "awslogs-region": "us-east-1"
+       }
+      },
+      "Name": "FrappeContainer",
+      "PortMappings": [
+       {
+        "ContainerPort": 8000,
+        "Protocol": "tcp"
+       }
+      ],
+      "WorkingDirectory": "/home/frappe"
+     }
+    ],
+    "Cpu": "1024",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "EarnipayTaskExecutionRole04F989CF",
+      "Arn"
+     ]
+    },
+    "Family": "MultiContainerEcsStackEarnipayTask6B82EED9",
+    "Memory": "2048",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "EarnipayTaskTaskRole0B0CBA53",
+      "Arn"
+     ]
+    },
+    "Volumes": [
+     {
+      "EFSVolumeConfiguration": {
+       "FilesystemId": {
+        "Ref": "MariaDbEfs9BCAE6B9"
+       }
+      },
+      "Name": "mariadb-data"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/EarnipayTask/Resource"
+   }
+  },
+  "EarnipayTaskMariaDbContainerLogGroup7391B6B2": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 7
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/EarnipayTask/MariaDbContainer/LogGroup/Resource"
+   }
+  },
+  "EarnipayTaskExecutionRole04F989CF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/EarnipayTask/ExecutionRole/Resource"
+   }
+  },
+  "EarnipayTaskExecutionRoleDefaultPolicyC8F142F6": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:ecr:us-east-1:816069156617:repository/earnipay/dashboard"
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "EarnipayTaskFrappeContainerLogGroupA9C934B7",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "EarnipayTaskMariaDbContainerLogGroup7391B6B2",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "EarnipayTaskRedisContainerLogGroup02106D37",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EarnipayTaskExecutionRoleDefaultPolicyC8F142F6",
+    "Roles": [
+     {
+      "Ref": "EarnipayTaskExecutionRole04F989CF"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/EarnipayTask/ExecutionRole/DefaultPolicy/Resource"
+   }
+  },
+  "EarnipayTaskRedisContainerLogGroup02106D37": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 7
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/EarnipayTask/RedisContainer/LogGroup/Resource"
+   }
+  },
+  "EarnipayTaskFrappeContainerLogGroupA9C934B7": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 7
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/EarnipayTask/FrappeContainer/LogGroup/Resource"
+   }
+  },
+  "EarnipayServiceFD4C61E8": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "EarnipayClusterD6AD406F"
+    },
+    "DeploymentConfiguration": {
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "DesiredCount": 2,
+    "EnableECSManagedTags": false,
+    "LaunchType": "FARGATE",
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "ENABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "EarnipayServiceSecurityGroup86380017",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       "subnet-0b871618748442b21",
+       "subnet-00e4791e45aa3d63a",
+       "subnet-0d70efc4d8b4a780a",
+       "subnet-019690c6ff961b555",
+       "subnet-0c8c74a46d052534c",
+       "subnet-024216905f19ff2ad"
+      ]
+     }
+    },
+    "ServiceName": "earnipay-service",
+    "TaskDefinition": {
+     "Ref": "EarnipayTask704054F6"
+    }
+   },
+   "DependsOn": [
+    "EarnipayTaskTaskRole0B0CBA53"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/EarnipayService/Service"
+   }
+  },
+  "EarnipayServiceSecurityGroup86380017": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MultiContainerEcsStack/EarnipayService/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": "vpc-03b464097bf99dc53"
+   },
+   "DependsOn": [
+    "EarnipayTaskTaskRole0B0CBA53"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/EarnipayService/SecurityGroup/Resource"
+   }
+  },
+  "EarnipayServiceTaskCountTargetCD2A0A9E": {
+   "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+   "Properties": {
+    "MaxCapacity": 5,
+    "MinCapacity": 1,
+    "ResourceId": {
+     "Fn::Join": [
+      "",
+      [
+       "service/",
+       {
+        "Ref": "EarnipayClusterD6AD406F"
+       },
+       "/",
+       {
+        "Fn::GetAtt": [
+         "EarnipayServiceFD4C61E8",
+         "Name"
+        ]
+       }
+      ]
+     ]
+    },
+    "RoleARN": "arn:aws:iam::816069156617:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService",
+    "ScalableDimension": "ecs:service:DesiredCount",
+    "ServiceNamespace": "ecs"
+   },
+   "DependsOn": [
+    "EarnipayTaskTaskRole0B0CBA53"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/EarnipayService/TaskCount/Target/Resource"
+   }
+  },
+  "EarnipayServiceTaskCountTargetCpuScalingCD654E18": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "MultiContainerEcsStackEarnipayServiceTaskCountTargetCpuScaling8E245284",
+    "PolicyType": "TargetTrackingScaling",
+    "ScalingTargetId": {
+     "Ref": "EarnipayServiceTaskCountTargetCD2A0A9E"
+    },
+    "TargetTrackingScalingPolicyConfiguration": {
+     "PredefinedMetricSpecification": {
+      "PredefinedMetricType": "ECSServiceAverageCPUUtilization"
+     },
+     "TargetValue": 50
+    }
+   },
+   "DependsOn": [
+    "EarnipayTaskTaskRole0B0CBA53"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/EarnipayService/TaskCount/Target/CpuScaling/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/11RTU/DMAz9LbtnRisS3BkaF5CmdnfkBbd4zZIqTpiqKP8dpd3YxsnPT3kfVipYPVWwWuBJlvqrXxreQ2oC6l7VJC56TQpP8plIC6S1iRLIq3VrL3CDvsNAO5T+lVq2HNjZ8uA/42xAtuRvuLO2If/DmoroAhuNBvdmsl27aENWpD3UNDjh4Pz4gkKKWoG0YUPNKIGOxeB++yjSHfqOJoMKUkM6eg7jm3dxmBNviKwYj5BqZ6Y209w6w3os64yyMq4TSO+u+zO54KxwGAxrLOdhDE40GrYdpOtBpcwUfM/MY+dR92y7ZtZds++InKd25//JajuGb2cfHmFVwfPiIMxLH23gI0E9z1/LwcYt5wEAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "MultiContainerEcsStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

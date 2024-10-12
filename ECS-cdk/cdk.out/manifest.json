@@ -1,0 +1,186 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "MultiContainerEcsStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "MultiContainerEcsStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "MultiContainerEcsStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://816069156617/us-east-1",
+      "properties": {
+        "templateFile": "MultiContainerEcsStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::816069156617:role/cdk-hnb659fds-deploy-role-816069156617-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::816069156617:role/cdk-hnb659fds-cfn-exec-role-816069156617-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-816069156617-us-east-1/2d8cb14e603eec7f9eab0ac3d99965b437b590288c21e88b58c3eb96ab67bbbe.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "MultiContainerEcsStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::816069156617:role/cdk-hnb659fds-lookup-role-816069156617-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "MultiContainerEcsStack.assets"
+      ],
+      "metadata": {
+        "/MultiContainerEcsStack/EarnipayCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayClusterD6AD406F"
+          }
+        ],
+        "/MultiContainerEcsStack/MariaDbEfs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MariaDbEfs9BCAE6B9"
+          }
+        ],
+        "/MultiContainerEcsStack/MariaDbEfs/EfsSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MariaDbEfsEfsSecurityGroup03B43D86"
+          }
+        ],
+        "/MultiContainerEcsStack/MariaDbEfs/EfsMountTarget-PublicSubnet1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MariaDbEfsEfsMountTargetPublicSubnet1A7D6721F"
+          }
+        ],
+        "/MultiContainerEcsStack/MariaDbEfs/EfsMountTarget-PublicSubnet2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MariaDbEfsEfsMountTargetPublicSubnet284B7B87F"
+          }
+        ],
+        "/MultiContainerEcsStack/MariaDbEfs/EfsMountTarget-PublicSubnet3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MariaDbEfsEfsMountTargetPublicSubnet3AFDE0464"
+          }
+        ],
+        "/MultiContainerEcsStack/MariaDbEfs/EfsMountTarget-PublicSubnet4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MariaDbEfsEfsMountTargetPublicSubnet49D40B1BB"
+          }
+        ],
+        "/MultiContainerEcsStack/MariaDbEfs/EfsMountTarget-PublicSubnet5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MariaDbEfsEfsMountTargetPublicSubnet5E35DC1AA"
+          }
+        ],
+        "/MultiContainerEcsStack/MariaDbEfs/EfsMountTarget-PublicSubnet6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MariaDbEfsEfsMountTargetPublicSubnet6204782E8"
+          }
+        ],
+        "/MultiContainerEcsStack/EarnipayTask/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayTaskTaskRole0B0CBA53"
+          }
+        ],
+        "/MultiContainerEcsStack/EarnipayTask/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayTask704054F6"
+          }
+        ],
+        "/MultiContainerEcsStack/EarnipayTask/MariaDbContainer/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayTaskMariaDbContainerLogGroup7391B6B2"
+          }
+        ],
+        "/MultiContainerEcsStack/EarnipayTask/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayTaskExecutionRole04F989CF"
+          }
+        ],
+        "/MultiContainerEcsStack/EarnipayTask/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayTaskExecutionRoleDefaultPolicyC8F142F6"
+          }
+        ],
+        "/MultiContainerEcsStack/EarnipayTask/RedisContainer/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayTaskRedisContainerLogGroup02106D37"
+          }
+        ],
+        "/MultiContainerEcsStack/EarnipayTask/FrappeContainer/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayTaskFrappeContainerLogGroupA9C934B7"
+          }
+        ],
+        "/MultiContainerEcsStack/EarnipayService/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayServiceFD4C61E8"
+          }
+        ],
+        "/MultiContainerEcsStack/EarnipayService/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayServiceSecurityGroup86380017"
+          }
+        ],
+        "/MultiContainerEcsStack/EarnipayService/TaskCount/Target/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayServiceTaskCountTargetCD2A0A9E"
+          }
+        ],
+        "/MultiContainerEcsStack/EarnipayService/TaskCount/Target/CpuScaling/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayServiceTaskCountTargetCpuScalingCD654E18"
+          }
+        ],
+        "/MultiContainerEcsStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/MultiContainerEcsStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/MultiContainerEcsStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "MultiContainerEcsStack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

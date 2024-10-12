@@ -31,8 +31,7 @@ class MultiContainerEcsStack(Stack):
 
         # Create an EFS file system for MariaDB persistence, within the default VPC
         file_system = efs.FileSystem(self, "MariaDbEfs",
-                                     vpc=vpc,
-                                     removal_policy=efs.RemovalPolicy.DESTROY)
+                                     vpc=vpc)
 
         # Define a Fargate Task Definition
         task_definition = ecs.FargateTaskDefinition(self, "EarnipayTask",

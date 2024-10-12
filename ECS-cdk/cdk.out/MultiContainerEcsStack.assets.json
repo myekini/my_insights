@@ -1,0 +1,20 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "2d8cb14e603eec7f9eab0ac3d99965b437b590288c21e88b58c3eb96ab67bbbe": {
+      "source": {
+        "path": "MultiContainerEcsStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "816069156617-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-816069156617-us-east-1",
+          "objectKey": "2d8cb14e603eec7f9eab0ac3d99965b437b590288c21e88b58c3eb96ab67bbbe.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::816069156617:role/cdk-hnb659fds-file-publishing-role-816069156617-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
