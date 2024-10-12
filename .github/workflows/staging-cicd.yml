@@ -64,7 +64,7 @@ jobs:
 
       # Download ECS Task Definition for Staging
       - name: Download ECS Task Definition
-        run: aws ecs describe-task-definition --task-definition frappe-service-staging --query taskDefinition > task-definition.json
+        run: aws ecs describe-task-definition --task-definition frappe-staging --query taskDefinition > task-definition.json
 
       # Update ECS Task Definition with New Image for Frappe
       - name: Update ECS Task Definition with New Image for Frappe
