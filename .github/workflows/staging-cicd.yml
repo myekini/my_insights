@@ -26,12 +26,11 @@ jobs:
       - name: Install Docker Compose
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y git
-          curl -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-          chmod +x /usr/local/bin/docker-compose
+          sudo apt-get install -y curl
+          curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
           docker-compose version
-        timeout-minutes: 5 
-        continue-on-error: false 
+        timeout-minutes: 5
 
       # Configure AWS credentials
       - name: Configure AWS credentials
@@ -47,14 +46,19 @@ jobs:
           docker pull mariadb:10.8
           docker pull redis:alpine
 
-      # Build, Tag, and Push Docker Images
+      # Build Docker Images
       - name: Build Docker Images
         id: build_images
         run: |
           cd docker
           docker-compose build
-          
-      # Build, Tag, and Push Docker Images
+
+      # Login to Amazon ECR
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+
+      # Tag and Push Docker Images to ECR
       - name: Tag and Push Docker Images
         id: tag_and_push_images
         run: |
@@ -65,26 +69,8 @@ jobs:
           docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:mariadb-staging-${{ github.sha }}
           docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:redis-staging-${{ github.sha }}
 
-
-      # # Update ECS Service with new images
-      # - name: Update ECS Task Definitions and Deploy
-      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      #   with:
-      #     service: ${{ env.ECS_SERVICE }}
-      #     cluster: ${{ env.ECS_CLUSTER }}
-      #     wait-for-service-stability: true
-      #     task-definition: |
-      #       family: frappe-staging
-      #       containerDefinitions:
-      #         - name: frappe
-      #           image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:frappe-staging-${{ github.sha }}
-      #         - name: mariadb
-      #           image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:mariadb-staging-${{ github.sha }}
-      #         - name: redis
-      #           image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:redis-staging-${{ github.sha }}
-
     # Save the image tags for later use in the CDK deployment
     outputs:
-      FRAPPE_TAG: ${{ steps.build_and_tag_images.outputs.FRAPPE_TAG }}
-      MARIADB_TAG: ${{ steps.build_and_tag_images.outputs.MARIADB_TAG }}
-      REDIS_TAG: ${{ steps.build_and_tag_images.outputs.REDIS_TAG }}
+      FRAPPE_TAG: ${{ steps.tag_and_push_images.outputs.FRAPPE_TAG }}
+      MARIADB_TAG: ${{ steps.tag_and_push_images.outputs.MARIADB_TAG }}
+      REDIS_TAG: ${{ steps.tag_and_push_images.outputs.REDIS_TAG }}
