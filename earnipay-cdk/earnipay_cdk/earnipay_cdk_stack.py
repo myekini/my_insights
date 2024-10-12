@@ -1,5 +1,3 @@
-import os
-
 from aws_cdk import Stack
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecr as ecr
@@ -13,10 +11,10 @@ class EarnipayCdkStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
-        # Get image tags from environment variables or default to 'latest'
-        frappe_tag = os.getenv("FRAPPE_TAG", "latest")
-        mariadb_tag = os.getenv("MARIADB_TAG", "latest")
-        redis_tag = os.getenv("REDIS_TAG", "latest")
+        # Set static tags as they are the latest images
+        frappe_tag = "frappe-staging-latest"
+        mariadb_tag = "mariadb-staging-latest"
+        redis_tag = "redis-staging-latest"
 
         # Import the default VPC
         vpc = ec2.Vpc.from_lookup(self, "DefaultVpc", is_default=True)
@@ -24,14 +22,11 @@ class EarnipayCdkStack(Stack):
         # Create an ECS Cluster within the default VPC
         cluster = ecs.Cluster(self, "EarnipayCluster", vpc=vpc, cluster_name="earnipay-cluster")
 
-        # Define ECR Repositories for Frappe, MariaDB, and Redis
-        frappe_repository = ecr.Repository.from_repository_name(self, "FrappeRepo", "earnipay/dashboard")
-        mariadb_repository = ecr.Repository.from_repository_name(self, "MariaDbRepo", "earnipay/dashboard")
-        redis_repository = ecr.Repository.from_repository_name(self, "RedisRepo", "earnipay/dashboard")
+        # Define a single ECR repository for Frappe, MariaDB, and Redis
+        repository = ecr.Repository.from_repository_name(self, "EarnipayRepo", "earnipay/dashboard")
 
         # Create an EFS file system for MariaDB persistence, within the default VPC
-        file_system = efs.FileSystem(self, "MariaDbEfs",
-                                     vpc=vpc)
+        file_system = efs.FileSystem(self, "MariaDbEfs", vpc=vpc)
 
         # Define a Fargate Task Definition
         task_definition = ecs.FargateTaskDefinition(self, "EarnipayTask",
@@ -42,7 +37,7 @@ class EarnipayCdkStack(Stack):
         # Add MariaDB Container
         mariadb_container = task_definition.add_container(
             "MariaDbContainer",
-            image=ecs.ContainerImage.from_ecr_repository(mariadb_repository, tag=mariadb_tag),
+            image=ecs.ContainerImage.from_ecr_repository(repository, tag=mariadb_tag),
             environment={"MYSQL_ROOT_PASSWORD": "123"},
             logging=ecs.LogDriver.aws_logs(stream_prefix="MariaDB", log_retention=logs.RetentionDays.ONE_WEEK)
         )
@@ -56,14 +51,14 @@ class EarnipayCdkStack(Stack):
         # Add Redis Container
         task_definition.add_container(
             "RedisContainer",
-            image=ecs.ContainerImage.from_ecr_repository(redis_repository, tag=redis_tag),
+            image=ecs.ContainerImage.from_ecr_repository(repository, tag=redis_tag),
             logging=ecs.LogDriver.aws_logs(stream_prefix="Redis", log_retention=logs.RetentionDays.ONE_WEEK)
         )
 
         # Add Frappe Container
         frappe_container = task_definition.add_container(
             "FrappeContainer",
-            image=ecs.ContainerImage.from_ecr_repository(frappe_repository, tag=frappe_tag),
+            image=ecs.ContainerImage.from_ecr_repository(repository, tag=frappe_tag),
             logging=ecs.LogDriver.aws_logs(stream_prefix="Frappe", log_retention=logs.RetentionDays.ONE_WEEK),
             command=["bash", "/workspace/init.sh"],
             environment={"SHELL": "/bin/bash"},
