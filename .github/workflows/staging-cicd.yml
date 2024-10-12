@@ -66,8 +66,8 @@ jobs:
       - name: Download ECS Task Definition
         run: aws ecs describe-task-definition --task-definition frappe-service-staging --query taskDefinition > task-definition.json
 
-      # Update ECS Task Definition with New Image
-      - name: Update ECS Task Definition with New Image
+      # Update ECS Task Definition with New Image for Frappe
+      - name: Update ECS Task Definition with New Image for Frappe
         id: update-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
@@ -75,11 +75,29 @@ jobs:
           container-name: frappe
           image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:frappe-staging-${{ env.IMAGE_TAG }}
 
+      # Update ECS Task Definition with New Image for MariaDB
+      - name: Update ECS Task Definition with New Image for MariaDB
+        id: update-mariadb
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ steps.update-task-def.outputs.task-definition }}
+          container-name: mariadb
+          image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:mariadb-staging-${{ env.IMAGE_TAG }}
+
+      # Update ECS Task Definition with New Image for Redis
+      - name: Update ECS Task Definition with New Image for Redis
+        id: update-redis
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ steps.update-mariadb.outputs.task-definition }}
+          container-name: redis
+          image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:redis-staging-${{ env.IMAGE_TAG }}
+
       # Deploy Updated ECS Task Definition to Staging
       - name: Deploy ECS Task Definition to Staging
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.update-task-def.outputs.task-definition }}
+          task-definition: ${{ steps.update-redis.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
