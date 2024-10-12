@@ -5,7 +5,7 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
       - --skip-character-set-client-handshake
-      - --skip-innodb-read-only-compressed # Temporary fix for MariaDB 10.6
+      - --skip-innodb-read-only-compressed
     environment:
       MYSQL_ROOT_PASSWORD: 123
     volumes:
@@ -15,13 +15,16 @@ services:
     image: redis:alpine
 
   frappe:
+    build:
+      context: ./docker 
+      dockerfile: Dockerfile
     image: frappe/bench:latest
     command: bash /workspace/init.sh
     environment:
       - SHELL=/bin/bash
     working_dir: /home/frappe
     volumes:
-      - .:/workspace
+      - ./docker:/workspace 
     ports:
       - 8000:8000
       - 9000:9000
