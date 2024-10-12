@@ -5,18 +5,16 @@ on:
     branches:
       - staging
     paths:
-      - 'ECS-cdk/**'  # Only trigger this job if files in the infra directory change
+      - 'ECS-cdk/**'  # Only trigger this job if files in the ECS-cdk directory change
 
 jobs:
   deploy_infrastructure:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the infra directory
+      # Checkout repository
       - name: Checkout Infra Directory
         uses: actions/checkout@v2
-        with:
-          path: infra  # Checkout infra directory to work with CDK files
 
       # Set up Python environment
       - name: Set up Python
@@ -27,7 +25,7 @@ jobs:
       # Install dependencies for CDK (specifically for Python CDK)
       - name: Install CDK Python Dependencies
         run: |
-          cd ./ECS-cdk
+          cd my_insights/ECS-cdk  # Adjust path to your ECS-cdk directory
           pip install -r requirements.txt
 
       # Install AWS CDK CLI (global tool)
@@ -36,6 +34,6 @@ jobs:
 
       # Deploy CDK Stack
       - name: Deploy CDK Stack
-        working-directory: /ECS-cdk 
+        working-directory: my_insights/ECS-cdk  # Adjust working directory path
         run: |
           cdk deploy --require-approval never
