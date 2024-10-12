@@ -1,6 +1,5 @@
 import os
 
-from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecr as ecr
 from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_efs as efs
@@ -13,15 +12,13 @@ class MultiContainerEcsStack(core.Stack):
         super().__init__(scope, id, **kwargs)
 
         # Get image tags from environment variables or default to 'latest'
-        frappe_tag = os.getenv("FRAPPE_TAG", "frappe-staging-latest")
-        mariadb_tag = os.getenv("MARIADB_TAG", "mariadb-staging-latest")
-        redis_tag = os.getenv("REDIS_TAG", "redis-staging-latest")
+        frappe_tag = os.getenv("FRAPPE_TAG")
+        mariadb_tag = os.getenv("MARIADB_TAG")
+        redis_tag = os.getenv("REDIS_TAG")
 
-        # Create a VPC if you don't have one
-        vpc = ec2.Vpc(self, "EarnipayVpc", max_azs=3)
 
         # Create an ECS Cluster
-        cluster = ecs.Cluster(self, "EarnipayCluster", cluster_name="earnipay-cluster", vpc=vpc)
+        cluster = ecs.Cluster(self, "EarnipayCluster", cluster_name="earnipay-cluster")
 
         # Define ECR Repositories for Frappe, MariaDB, and Redis
         frappe_repository = ecr.Repository.from_repository_name(self, "FrappeRepo", "earnipay/dashboard")
@@ -30,8 +27,6 @@ class MultiContainerEcsStack(core.Stack):
 
         # Create an EFS file system for MariaDB persistence
         file_system = efs.FileSystem(self, "MariaDbEfs",
-                                     vpc=vpc,
-                                     lifecycle_policy=efs.LifecyclePolicy.AFTER_7_DAYS,
                                      removal_policy=core.RemovalPolicy.DESTROY)
 
         # Define a Fargate Task Definition
@@ -81,8 +76,8 @@ class MultiContainerEcsStack(core.Stack):
         service = ecs.FargateService(self, "EarnipayService",
             cluster=cluster,
             task_definition=task_definition,
-            desired_count=2,  # Adjust based on your scaling needs
-            assign_public_ip=True,  # Optional: If the service needs to be publicly accessible
+            desired_count=2,
+            assign_public_ip=True,
             service_name="earnipay-service"
         )
 
