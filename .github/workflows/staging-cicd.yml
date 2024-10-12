@@ -1,9 +1,13 @@
-name: CI/CD Pipeline for Frappe Insights
+name: Combined CI/CD Pipeline for Frappe Insights and CDK Deployment
 
 on:
   push:
     branches:
       - staging
+
+    paths:
+      - 'ECS-cdk/**'  # Trigger the CDK deployment when changes happen in ECS-cdk folder
+      - '!ECS-cdk/**' # Trigger application deployment for changes outside ECS-cdk
 
 env:
   AWS_REGION: us-east-1
@@ -13,7 +17,40 @@ env:
   ECS_SERVICE: earnipay-service
 
 jobs:
-  # Job 1: Application deployment
+  # Job 1: Infrastructure Deployment (triggered only when changes in ECS-cdk folder)
+  deploy_infrastructure:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the infra directory
+      - name: Checkout Infra Directory
+        uses: actions/checkout@v2
+        with:
+          path: infra  # Checkout infra directory to work with CDK files
+
+      # Set up Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      # Install dependencies for CDK (specifically for Python CDK)
+      - name: Install CDK Python Dependencies
+        run: |
+          cd infra/ECS-cdk
+          pip install -r requirements.txt
+
+      # Install AWS CDK CLI (global tool)
+      - name: Install AWS CDK CLI
+        run: npm install -g aws-cdk
+
+      # Deploy CDK Stack
+      - name: Deploy CDK Stack
+        working-directory: infra/ECS-cdk 
+        run: |
+          cdk deploy --require-approval never
+
+  # Job 2: Application Deployment (triggered for changes outside ECS-cdk folder)
   build_and_deploy_application:
     runs-on: ubuntu-latest
 
