@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - staging
+    paths:
+      - 'ECS-cdk/**'  # Trigger infrastructure deployment only for changes in ECS-cdk
+      - 'docker/**'   # Trigger application deployment for changes in docker folder
+      - '!ECS-cdk/**' # Trigger application deployment for any changes outside ECS-cdk folder
 
 env:
   AWS_REGION: us-east-1
@@ -15,7 +19,6 @@ env:
 jobs:
   # Job 1: Infrastructure Deployment (only when there are changes in ECS-cdk folder)
   deploy_infrastructure:
-    if: contains(github.event.head_commit.message, '[infra]') || github.event_name == 'push' && contains(github.event.head_commit.message, 'ECS-cdk/')
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +26,7 @@ jobs:
       - name: Checkout Infra Directory
         uses: actions/checkout@v2
         with:
-          path: infra  # Checkout infra directory to work with CDK files
+          path: 'ECS-cdk/**'
 
       # Set up Python environment
       - name: Set up Python
