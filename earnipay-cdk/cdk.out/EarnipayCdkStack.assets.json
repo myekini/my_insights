@@ -1,0 +1,20 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "5c9ae1e495d6d14610f47a1e1a3ba5e939754319ccf95e0237d39ec76f01ceff": {
+      "source": {
+        "path": "EarnipayCdkStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "816069156617-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-816069156617-us-east-1",
+          "objectKey": "5c9ae1e495d6d14610f47a1e1a3ba5e939754319ccf95e0237d39ec76f01ceff.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::816069156617:role/cdk-hnb659fds-file-publishing-role-816069156617-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

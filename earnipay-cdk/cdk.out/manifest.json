@@ -1,0 +1,186 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "EarnipayCdkStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EarnipayCdkStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EarnipayCdkStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://816069156617/us-east-1",
+      "properties": {
+        "templateFile": "EarnipayCdkStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::816069156617:role/cdk-hnb659fds-deploy-role-816069156617-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::816069156617:role/cdk-hnb659fds-cfn-exec-role-816069156617-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-816069156617-us-east-1/5c9ae1e495d6d14610f47a1e1a3ba5e939754319ccf95e0237d39ec76f01ceff.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EarnipayCdkStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::816069156617:role/cdk-hnb659fds-lookup-role-816069156617-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EarnipayCdkStack.assets"
+      ],
+      "metadata": {
+        "/EarnipayCdkStack/EarnipayCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayClusterD6AD406F"
+          }
+        ],
+        "/EarnipayCdkStack/MariaDbEfs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MariaDbEfs9BCAE6B9"
+          }
+        ],
+        "/EarnipayCdkStack/MariaDbEfs/EfsSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MariaDbEfsEfsSecurityGroup03B43D86"
+          }
+        ],
+        "/EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MariaDbEfsEfsMountTargetPublicSubnet1A7D6721F"
+          }
+        ],
+        "/EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MariaDbEfsEfsMountTargetPublicSubnet284B7B87F"
+          }
+        ],
+        "/EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MariaDbEfsEfsMountTargetPublicSubnet3AFDE0464"
+          }
+        ],
+        "/EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MariaDbEfsEfsMountTargetPublicSubnet49D40B1BB"
+          }
+        ],
+        "/EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MariaDbEfsEfsMountTargetPublicSubnet5E35DC1AA"
+          }
+        ],
+        "/EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MariaDbEfsEfsMountTargetPublicSubnet6204782E8"
+          }
+        ],
+        "/EarnipayCdkStack/EarnipayTask/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayTaskTaskRole0B0CBA53"
+          }
+        ],
+        "/EarnipayCdkStack/EarnipayTask/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayTask704054F6"
+          }
+        ],
+        "/EarnipayCdkStack/EarnipayTask/MariaDbContainer/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayTaskMariaDbContainerLogGroup7391B6B2"
+          }
+        ],
+        "/EarnipayCdkStack/EarnipayTask/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayTaskExecutionRole04F989CF"
+          }
+        ],
+        "/EarnipayCdkStack/EarnipayTask/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayTaskExecutionRoleDefaultPolicyC8F142F6"
+          }
+        ],
+        "/EarnipayCdkStack/EarnipayTask/RedisContainer/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayTaskRedisContainerLogGroup02106D37"
+          }
+        ],
+        "/EarnipayCdkStack/EarnipayTask/FrappeContainer/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayTaskFrappeContainerLogGroupA9C934B7"
+          }
+        ],
+        "/EarnipayCdkStack/EarnipayService/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayServiceFD4C61E8"
+          }
+        ],
+        "/EarnipayCdkStack/EarnipayService/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayServiceSecurityGroup86380017"
+          }
+        ],
+        "/EarnipayCdkStack/EarnipayService/TaskCount/Target/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayServiceTaskCountTargetCD2A0A9E"
+          }
+        ],
+        "/EarnipayCdkStack/EarnipayService/TaskCount/Target/CpuScaling/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EarnipayServiceTaskCountTargetCpuScalingCD654E18"
+          }
+        ],
+        "/EarnipayCdkStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/EarnipayCdkStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EarnipayCdkStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EarnipayCdkStack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
