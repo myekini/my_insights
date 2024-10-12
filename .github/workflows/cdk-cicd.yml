@@ -25,11 +25,7 @@ jobs:
       # Install dependencies for CDK (specifically for Python CDK)
       - name: Install CDK Python Dependencies
         run: |
-          cd /Users/muhammadyekini/Downloads/Data-infrastructure/my_insights/ECS-cdk
-          # Add a step to list the files in the current directory for debugging
-      - name: List Files for Debugging
-        run: |
-          ls -al
+          cd ECS-cdk
           pip install -r requirements.txt
 
       # Install AWS CDK CLI (global tool)
@@ -38,6 +34,6 @@ jobs:
 
       # Deploy CDK Stack
       - name: Deploy CDK Stack
-        working-directory: my_insights/ECS-cdk  # Adjust working directory path
+        working-directory: ECS-cdk
         run: |
           cdk deploy --require-approval never
