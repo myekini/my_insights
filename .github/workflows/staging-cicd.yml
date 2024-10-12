@@ -1,4 +1,4 @@
-name: CI/CD Pipeline for Frappe Insights - Staging
+name: CI/CD Pipeline for Frappe Insights
 
 on:
   push:
@@ -11,20 +11,16 @@ env:
   ECR_REPOSITORY: earnipay/dashboard
   ECS_CLUSTER: earnipay-cluster
   ECS_SERVICE: earnipay-service
-  IMAGE_TAG: ${{ github.sha }}
-  DOCKER_COMPOSE_VERSION: 3.7
 
 jobs:
-  build_and_deploy:
+  # Job 1: Application deployment
+  build_and_deploy_application:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository with submodules
-      - name: Checkout Repository with Submodules
+      # Checkout repository
+      - name: Checkout Code
         uses: actions/checkout@v2
-        with:
-          submodules: recursive
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       # Configure AWS credentials
       - name: Configure AWS credentials
@@ -34,70 +30,38 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # Login to Amazon ECR
-      - name: Login to Amazon ECR
+      # Build, Tag, and Push Docker Images
+      - name: Build, Tag, and Push Docker Images
+        id: build_and_tag_images
         run: |
-          aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+          docker-compose build
+          docker tag frappe/bench:latest ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:frappe-staging-${{ github.sha }}
+          docker tag mariadb:10.8 ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:mariadb-staging-${{ github.sha }}
+          docker tag redis:alpine ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:redis-staging-${{ github.sha }}
+          docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:frappe-staging-${{ github.sha }}
+          docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:mariadb-staging-${{ github.sha }}
+          docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:redis-staging-${{ github.sha }}
 
-      # Pull and Tag Docker Images
-      - name: Pull and Tag Docker Images
-        run: |
-          docker pull frappe/bench:latest
-          docker pull mariadb:10.8
-          docker pull redis:alpine
 
-          docker tag frappe/bench:latest ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:frappe-staging-${{ env.IMAGE_TAG }}
-          docker tag mariadb:10.8 ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:mariadb-staging-${{ env.IMAGE_TAG }}
-          docker tag redis:alpine ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:redis-staging-${{ env.IMAGE_TAG }}
-
-      # Push Docker Images to ECR
-      - name: Push Docker Images to ECR
-        run: |
-          docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:frappe-staging-${{ env.IMAGE_TAG }}
-          docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:mariadb-staging-${{ env.IMAGE_TAG }}
-          docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:redis-staging-${{ env.IMAGE_TAG }}
-
-      # Clean up Docker images locally after pushing
-      - name: Clean up Docker Images
-        run: |
-          docker rmi frappe/bench:latest mariadb:10.8 redis:alpine || true
-
-      # Download ECS Task Definition for Staging
-      - name: Download ECS Task Definition
-        run: aws ecs describe-task-definition --task-definition frappe-staging --query taskDefinition > task-definition.json
-
-      # Update ECS Task Definition with New Image for Frappe
-      - name: Update ECS Task Definition with New Image for Frappe
-        id: update-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: task-definition.json
-          container-name: frappe
-          image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:frappe-staging-${{ env.IMAGE_TAG }}
-
-      # Update ECS Task Definition with New Image for MariaDB
-      - name: Update ECS Task Definition with New Image for MariaDB
-        id: update-mariadb
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ steps.update-task-def.outputs.task-definition }}
-          container-name: mariadb
-          image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:mariadb-staging-${{ env.IMAGE_TAG }}
-
-      # Update ECS Task Definition with New Image for Redis
-      - name: Update ECS Task Definition with New Image for Redis
-        id: update-redis
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ steps.update-mariadb.outputs.task-definition }}
-          container-name: redis
-          image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:redis-staging-${{ env.IMAGE_TAG }}
-
-      # Deploy Updated ECS Task Definition to Staging
-      - name: Deploy ECS Task Definition to Staging
+      # Update ECS Service with new images
+      - name: Update ECS Task Definitions and Deploy
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.update-redis.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
+          task-definition: |
+            family: frappe-staging
+            containerDefinitions:
+              - name: frappe
+                image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:frappe-staging-${{ github.sha }}
+              - name: mariadb
+                image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:mariadb-staging-${{ github.sha }}
+              - name: redis
+                image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:redis-staging-${{ github.sha }}
+
+    # Save the image tags for later use in the CDK deployment
+    outputs:
+      FRAPPE_TAG: ${{ steps.build_and_tag_images.outputs.FRAPPE_TAG }}
+      MARIADB_TAG: ${{ steps.build_and_tag_images.outputs.MARIADB_TAG }}
+      REDIS_TAG: ${{ steps.build_and_tag_images.outputs.REDIS_TAG }}
