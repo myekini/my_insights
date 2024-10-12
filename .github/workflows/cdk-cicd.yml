@@ -27,4 +27,5 @@ jobs:
       - name: Deploy CDK Stack
         working-directory: infra  # Run CDK deploy from the infra directory
         run: |
+          cd ECS-cdk
           cdk deploy --require-approval never

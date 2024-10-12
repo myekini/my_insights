@@ -43,22 +43,22 @@ jobs:
           docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:redis-staging-${{ github.sha }}
 
 
-      # Update ECS Service with new images
-      - name: Update ECS Task Definitions and Deploy
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          service: ${{ env.ECS_SERVICE }}
-          cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
-          task-definition: |
-            family: frappe-staging
-            containerDefinitions:
-              - name: frappe
-                image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:frappe-staging-${{ github.sha }}
-              - name: mariadb
-                image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:mariadb-staging-${{ github.sha }}
-              - name: redis
-                image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:redis-staging-${{ github.sha }}
+      # # Update ECS Service with new images
+      # - name: Update ECS Task Definitions and Deploy
+      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      #   with:
+      #     service: ${{ env.ECS_SERVICE }}
+      #     cluster: ${{ env.ECS_CLUSTER }}
+      #     wait-for-service-stability: true
+      #     task-definition: |
+      #       family: frappe-staging
+      #       containerDefinitions:
+      #         - name: frappe
+      #           image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:frappe-staging-${{ github.sha }}
+      #         - name: mariadb
+      #           image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:mariadb-staging-${{ github.sha }}
+      #         - name: redis
+      #           image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:redis-staging-${{ github.sha }}
 
     # Save the image tags for later use in the CDK deployment
     outputs:
