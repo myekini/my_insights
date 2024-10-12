@@ -16,7 +16,6 @@ services:
 
   frappe:
     build:
-      context: ./docker 
       dockerfile: Dockerfile
     image: frappe/bench:latest
     command: bash /workspace/init.sh
