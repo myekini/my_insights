@@ -21,12 +21,17 @@ jobs:
       # Checkout repository
       - name: Checkout Code
         uses: actions/checkout@v2
-        
+
       # Install Docker Compose
       - name: Install Docker Compose
         run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
+          sudo apt-get update -y
+          sudo apt-get install -y git
+          curl -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+          docker-compose version
+        timeout-minutes: 5 
+        continue-on-error: false 
 
       # Configure AWS credentials
       - name: Configure AWS credentials
