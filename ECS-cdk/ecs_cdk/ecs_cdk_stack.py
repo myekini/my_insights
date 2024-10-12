@@ -1,23 +1,13 @@
-import os
-
+import os  # noqa: I001
 from aws_cdk import (
-    RemovalPolicy,
     Stack,
-)
-from aws_cdk import (
+    aws_ec2 as ec2,
     aws_ecr as ecr,
-)
-from aws_cdk import (
     aws_ecs as ecs,
-)
-from aws_cdk import (
     aws_efs as efs,
-)
-from aws_cdk import (
     aws_logs as logs,
 )
 from constructs import Construct
-
 
 class MultiContainerEcsStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
@@ -28,17 +18,21 @@ class MultiContainerEcsStack(Stack):
         mariadb_tag = os.getenv("MARIADB_TAG", "latest")
         redis_tag = os.getenv("REDIS_TAG", "latest")
 
-        # Create an ECS Cluster
-        cluster = ecs.Cluster(self, "EarnipayCluster", cluster_name="earnipay-cluster")
+        # Import the default VPC
+        vpc = ec2.Vpc.from_lookup(self, "DefaultVpc", is_default=True)
+
+        # Create an ECS Cluster within the default VPC
+        cluster = ecs.Cluster(self, "EarnipayCluster", vpc=vpc, cluster_name="earnipay-cluster")
 
         # Define ECR Repositories for Frappe, MariaDB, and Redis
         frappe_repository = ecr.Repository.from_repository_name(self, "FrappeRepo", "earnipay/dashboard")
         mariadb_repository = ecr.Repository.from_repository_name(self, "MariaDbRepo", "earnipay/dashboard")
         redis_repository = ecr.Repository.from_repository_name(self, "RedisRepo", "earnipay/dashboard")
 
-        # Create an EFS file system for MariaDB persistence
+        # Create an EFS file system for MariaDB persistence, within the default VPC
         file_system = efs.FileSystem(self, "MariaDbEfs",
-                                     removal_policy=RemovalPolicy.DESTROY)
+                                     vpc=vpc,  # Attach EFS to the default VPC
+                                     removal_policy=efs.RemovalPolicy.DESTROY)
 
         # Define a Fargate Task Definition
         task_definition = ecs.FargateTaskDefinition(self, "EarnipayTask",
