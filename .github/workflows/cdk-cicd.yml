@@ -12,20 +12,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout only the infra directory to optimize speed
+      # Checkout the infra directory
       - name: Checkout Infra Directory
         uses: actions/checkout@v2
         with:
-          path: infra  # Check out only the infra directory
+          path: infra  # Checkout infra directory to work with CDK files
 
-      # Install AWS CDK
-      - name: Install AWS CDK
+      # Set up Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      # Install dependencies for CDK (specifically for Python CDK)
+      - name: Install CDK Python Dependencies
         run: |
-          npm install -g aws-cdk
+          cd /ECS-cdk
+          pip install -r requirements.txt
+
+      # Install AWS CDK CLI (global tool)
+      - name: Install AWS CDK CLI
+        run: npm install -g aws-cdk
 
       # Deploy CDK Stack
       - name: Deploy CDK Stack
-        working-directory: infra  # Run CDK deploy from the infra directory
+        working-directory: /ECS-cdk 
         run: |
-          cd ECS-cdk
           cdk deploy --require-approval never
