@@ -1,21 +1,32 @@
 import os
 
-from aws_cdk import aws_ecr as ecr
-from aws_cdk import aws_ecs as ecs
-from aws_cdk import aws_efs as efs
-from aws_cdk import aws_logs as logs
-from aws_cdk import core
+from aws_cdk import (
+    RemovalPolicy,
+    Stack,
+)
+from aws_cdk import (
+    aws_ecr as ecr,
+)
+from aws_cdk import (
+    aws_ecs as ecs,
+)
+from aws_cdk import (
+    aws_efs as efs,
+)
+from aws_cdk import (
+    aws_logs as logs,
+)
+from constructs import Construct
 
 
-class MultiContainerEcsStack(core.Stack):
-    def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
+class MultiContainerEcsStack(Stack):
+    def __init__(self, scope: Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         # Get image tags from environment variables or default to 'latest'
-        frappe_tag = os.getenv("FRAPPE_TAG")
-        mariadb_tag = os.getenv("MARIADB_TAG")
-        redis_tag = os.getenv("REDIS_TAG")
-
+        frappe_tag = os.getenv("FRAPPE_TAG", "latest")
+        mariadb_tag = os.getenv("MARIADB_TAG", "latest")
+        redis_tag = os.getenv("REDIS_TAG", "latest")
 
         # Create an ECS Cluster
         cluster = ecs.Cluster(self, "EarnipayCluster", cluster_name="earnipay-cluster")
@@ -27,7 +38,7 @@ class MultiContainerEcsStack(core.Stack):
 
         # Create an EFS file system for MariaDB persistence
         file_system = efs.FileSystem(self, "MariaDbEfs",
-                                     removal_policy=core.RemovalPolicy.DESTROY)
+                                     removal_policy=RemovalPolicy.DESTROY)
 
         # Define a Fargate Task Definition
         task_definition = ecs.FargateTaskDefinition(self, "EarnipayTask",
