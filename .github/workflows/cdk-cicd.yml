@@ -25,7 +25,7 @@ jobs:
       # Install dependencies for CDK (specifically for Python CDK)
       - name: Install CDK Python Dependencies
         run: |
-          cd my_insights/ECS-cdk  # Adjust path to your ECS-cdk directory
+          cd /Users/muhammadyekini/Downloads/Data-infrastructure/my_insights/ECS-cdk
           pip install -r requirements.txt
 
       # Install AWS CDK CLI (global tool)
