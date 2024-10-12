@@ -7,8 +7,5 @@ WORKDIR /workspace
 # Copy the init.sh script from the local machine to the container
 COPY init.sh /workspace/init.sh
 
-# Make the init.sh script executable
-RUN chmod +x init.sh
-
 # Run the init.sh script to initialize the Frappe environment
 CMD ["bash", "/workspace/init.sh"]
