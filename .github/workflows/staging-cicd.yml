@@ -21,6 +21,12 @@ jobs:
       # Checkout repository
       - name: Checkout Code
         uses: actions/checkout@v2
+        
+      # Install Docker Compose
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
 
       # Configure AWS credentials
       - name: Configure AWS credentials
