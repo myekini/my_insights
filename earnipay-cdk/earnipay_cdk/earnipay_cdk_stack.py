@@ -12,25 +12,21 @@ class EarnipayCdkStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
-        # Image tags
+        # Image tags for Frappe
         frappe_tag = "frappe-staging-latest"
-        mariadb_tag = "mariadb-staging-latest"
-        redis_tag = "redis-staging-latest"
 
-        # Import default VPC
+        # Import the default VPC
         vpc = ec2.Vpc.from_lookup(self, "DefaultVpc", is_default=True)
 
         # ECS Cluster
         cluster = ecs.Cluster(self, "EarnipayCluster", vpc=vpc, cluster_name="earnipay-cluster")
-
-        # ECR Repository
-        repository = ecr.Repository.from_repository_name(self, "EarnipayRepo", "earnipay/dashboard")
 
         # EFS File System and Security Group (pre-created)
         efs_file_system_id = "fs-0e9028aef21a04f20"
         efs_security_group_id = "sg-05ef1001c9b846a54"
         efs_security_group = ec2.SecurityGroup.from_security_group_id(self, "EFSSecurityGroup", efs_security_group_id)
 
+        # Reference existing EFS file system
         file_system = efs.FileSystem.from_file_system_attributes(
             self,
             "ExistingEFS",
@@ -54,7 +50,7 @@ class EarnipayCdkStack(Stack):
             }
         )
 
-        # ECS Security Group for NFS Traffic
+        # Create ECS Task Security Group for NFS Traffic
         ecs_security_group = ec2.SecurityGroup(self, "ECSTaskSecurityGroup", vpc=vpc)
         ecs_security_group.add_egress_rule(
             ec2.Peer.security_group_id(efs_security_group.security_group_id),
@@ -69,11 +65,19 @@ class EarnipayCdkStack(Stack):
             execution_role=ecs_task_role
         )
 
-        # MariaDB Container
+        # MariaDB Container (directly from Docker Hub)
         mariadb_container = task_definition.add_container(
             "MariaDbContainer",
-            image=ecs.ContainerImage.from_ecr_repository(repository, tag=mariadb_tag),
-            environment={"MYSQL_ROOT_PASSWORD": "123"},
+            image=ecs.ContainerImage.from_registry("mariadb:10.8"),  # Pulling from Docker Hub
+            environment={
+                "MYSQL_ROOT_PASSWORD": "123"
+            },
+            command=[
+                "--character-set-server=utf8mb4",
+                "--collation-server=utf8mb4_unicode_ci",
+                "--skip-character-set-client-handshake",
+                "--skip-innodb-read-only-compressed"
+            ],
             logging=ecs.LogDriver.aws_logs(stream_prefix="MariaDB", log_retention=logs.RetentionDays.ONE_WEEK),
             essential=True,
             health_check=ecs.HealthCheck(
@@ -87,10 +91,10 @@ class EarnipayCdkStack(Stack):
             read_only=False
         ))
 
-        # Redis Container
+        # Redis Container (directly from Docker Hub)
         redis_container = task_definition.add_container(
             "RedisContainer",
-            image=ecs.ContainerImage.from_ecr_repository(repository, tag=redis_tag),
+            image=ecs.ContainerImage.from_registry("redis:alpine"),
             logging=ecs.LogDriver.aws_logs(stream_prefix="Redis", log_retention=logs.RetentionDays.ONE_WEEK),
             essential=True,
             health_check=ecs.HealthCheck(
@@ -99,10 +103,10 @@ class EarnipayCdkStack(Stack):
             )
         )
 
-        # Frappe Container
+        # Frappe Container (from ECR repository)
         frappe_container = task_definition.add_container(
             "FrappeContainer",
-            image=ecs.ContainerImage.from_ecr_repository(repository, tag=frappe_tag),
+            image=ecs.ContainerImage.from_ecr_repository(ecr.Repository.from_repository_name(self, "FrappeRepo", "earnipay/dashboard"), tag=frappe_tag),
             logging=ecs.LogDriver.aws_logs(stream_prefix="Frappe", log_retention=logs.RetentionDays.ONE_WEEK),
             command=["bash", "/workspace/init.sh"],
             environment={"SHELL": "/bin/bash"},
@@ -111,7 +115,7 @@ class EarnipayCdkStack(Stack):
         )
         frappe_container.add_port_mappings(ecs.PortMapping(container_port=8000))
 
-        # Set Frappe dependencies (on MariaDB and Redis)
+        # Set Frappe dependencies (MariaDB and Redis must be healthy)
         frappe_container.add_container_dependencies(
             ecs.ContainerDependency(container=mariadb_container, condition=ecs.ContainerDependencyCondition.HEALTHY),
             ecs.ContainerDependency(container=redis_container, condition=ecs.ContainerDependencyCondition.HEALTHY)
@@ -133,6 +137,6 @@ class EarnipayCdkStack(Stack):
             service_name="earnipay-service"
         )
 
-        # Auto-scaling configuration
+        # Enable Auto-scaling
         scalable_target = service.auto_scale_task_count(min_capacity=1, max_capacity=5)
         scalable_target.scale_on_cpu_utilization("CpuScaling", target_utilization_percent=50)

@@ -13,7 +13,6 @@ env:
   ECS_SERVICE: earnipay-service
 
 jobs:
-  # Job 1: Application deployment
   build_and_deploy_application:
     runs-on: ubuntu-latest
 
@@ -39,38 +38,25 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-      
-      # Pull required Docker images to avoid "no such image" errors
-      - name: Pull Required Docker Images
-        run: |
-          docker pull mariadb:10.8
-          docker pull redis:alpine
 
-      # Build Docker Images
-      - name: Build Docker Images
+      # Build only the frappe image
+      - name: Build Frappe Docker Image
         id: build_images
         run: |
           cd docker
-          docker-compose build
+          docker-compose build frappe
 
       # Login to Amazon ECR
       - name: Login to Amazon ECR
         run: |
           aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
 
-      # Tag and Push Docker Images with static 'latest' tag
-      - name: Tag and Push Docker Images
+      # Tag and Push Frappe Docker Image
+      - name: Tag and Push Frappe Docker Image
         id: tag_and_push_images
         run: |
           docker tag frappe/bench:latest ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:frappe-staging-latest
-          docker tag mariadb:10.8 ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:mariadb-staging-latest
-          docker tag redis:alpine ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:redis-staging-latest
           docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:frappe-staging-latest
-          docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:mariadb-staging-latest
-          docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:redis-staging-latest
 
-    # Save the image tags for later use in the CDK deployment
     outputs:
       FRAPPE_TAG: frappe-staging-latest
-      MARIADB_TAG: mariadb-staging-latest
-      REDIS_TAG: redis-staging-latest
