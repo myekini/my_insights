@@ -90,265 +90,195 @@
               "version": "2.162.1"
             }
           },
-          "FrappeRepo": {
-            "id": "FrappeRepo",
-            "path": "EarnipayCdkStack/FrappeRepo",
+          "EarnipayRepo": {
+            "id": "EarnipayRepo",
+            "path": "EarnipayCdkStack/EarnipayRepo",
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
               "version": "2.162.1"
             }
           },
-          "MariaDbRepo": {
-            "id": "MariaDbRepo",
-            "path": "EarnipayCdkStack/MariaDbRepo",
+          "EFSSecurityGroup": {
+            "id": "EFSSecurityGroup",
+            "path": "EarnipayCdkStack/EFSSecurityGroup",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "2.162.1"
             }
           },
-          "RedisRepo": {
-            "id": "RedisRepo",
-            "path": "EarnipayCdkStack/RedisRepo",
+          "ExistingEFS": {
+            "id": "ExistingEFS",
+            "path": "EarnipayCdkStack/ExistingEFS",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "2.162.1"
             }
           },
-          "MariaDbEfs": {
-            "id": "MariaDbEfs",
-            "path": "EarnipayCdkStack/MariaDbEfs",
+          "ECSTaskRole": {
+            "id": "ECSTaskRole",
+            "path": "EarnipayCdkStack/ECSTaskRole",
             "children": {
+              "ImportECSTaskRole": {
+                "id": "ImportECSTaskRole",
+                "path": "EarnipayCdkStack/ECSTaskRole/ImportECSTaskRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.162.1"
+                }
+              },
               "Resource": {
                 "id": "Resource",
-                "path": "EarnipayCdkStack/MariaDbEfs/Resource",
+                "path": "EarnipayCdkStack/ECSTaskRole/Resource",
                 "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EFS::FileSystem",
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                   "aws:cdk:cloudformation:props": {
-                    "encrypted": true,
-                    "fileSystemPolicy": {
+                    "assumeRolePolicyDocument": {
                       "Statement": [
                         {
-                          "Action": [
-                            "elasticfilesystem:ClientRootAccess",
-                            "elasticfilesystem:ClientWrite"
-                          ],
-                          "Condition": {
-                            "Bool": {
-                              "elasticfilesystem:AccessedViaMountTarget": "true"
-                            }
-                          },
+                          "Action": "sts:AssumeRole",
                           "Effect": "Allow",
                           "Principal": {
-                            "AWS": "*"
+                            "Service": "ecs-tasks.amazonaws.com"
                           }
                         }
                       ],
                       "Version": "2012-10-17"
                     },
-                    "fileSystemTags": [
+                    "policies": [
                       {
-                        "key": "Name",
-                        "value": "EarnipayCdkStack/MariaDbEfs"
+                        "policyName": "EFSAccessPolicy",
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "elasticfilesystem:ClientMount",
+                                "elasticfilesystem:ClientWrite"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": "arn:aws:elasticfilesystem:us-east-1:816069156617:file-system/fs-0e9028aef21a04f20"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
                       }
                     ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_efs.CfnFileSystem",
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                   "version": "2.162.1"
                 }
               },
-              "EfsSecurityGroup": {
-                "id": "EfsSecurityGroup",
-                "path": "EarnipayCdkStack/MariaDbEfs/EfsSecurityGroup",
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "EarnipayCdkStack/ECSTaskRole/DefaultPolicy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "EarnipayCdkStack/MariaDbEfs/EfsSecurityGroup/Resource",
+                    "path": "EarnipayCdkStack/ECSTaskRole/DefaultPolicy/Resource",
                     "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "EarnipayCdkStack/MariaDbEfs/EfsSecurityGroup",
-                        "securityGroupEgress": [
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "ecr:BatchCheckLayerAvailability",
+                                "ecr:BatchGetImage",
+                                "ecr:GetDownloadUrlForLayer"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": "arn:aws:ecr:us-east-1:816069156617:repository/earnipay/dashboard"
+                            },
+                            {
+                              "Action": "ecr:GetAuthorizationToken",
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            },
+                            {
+                              "Action": [
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "EarnipayTaskFrappeContainerLogGroupA9C934B7",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::GetAtt": [
+                                    "EarnipayTaskMariaDbContainerLogGroup7391B6B2",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::GetAtt": [
+                                    "EarnipayTaskRedisContainerLogGroup02106D37",
+                                    "Arn"
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "ECSTaskRoleDefaultPolicy82FC9293",
+                        "roles": [
                           {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
+                            "Ref": "ECSTaskRoleF2ADB362"
                           }
-                        ],
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "EarnipayCdkStack/MariaDbEfs"
-                          }
-                        ],
-                        "vpcId": "vpc-03b464097bf99dc53"
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                       "version": "2.162.1"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "2.162.1"
-                }
-              },
-              "EfsMountTarget-PublicSubnet1": {
-                "id": "EfsMountTarget-PublicSubnet1",
-                "path": "EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet1",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
-                  "aws:cdk:cloudformation:props": {
-                    "fileSystemId": {
-                      "Ref": "MariaDbEfs9BCAE6B9"
-                    },
-                    "securityGroups": [
-                      {
-                        "Fn::GetAtt": [
-                          "MariaDbEfsEfsSecurityGroup03B43D86",
-                          "GroupId"
-                        ]
-                      }
-                    ],
-                    "subnetId": "subnet-0b871618748442b21"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_efs.CfnMountTarget",
-                  "version": "2.162.1"
-                }
-              },
-              "EfsMountTarget-PublicSubnet2": {
-                "id": "EfsMountTarget-PublicSubnet2",
-                "path": "EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet2",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
-                  "aws:cdk:cloudformation:props": {
-                    "fileSystemId": {
-                      "Ref": "MariaDbEfs9BCAE6B9"
-                    },
-                    "securityGroups": [
-                      {
-                        "Fn::GetAtt": [
-                          "MariaDbEfsEfsSecurityGroup03B43D86",
-                          "GroupId"
-                        ]
-                      }
-                    ],
-                    "subnetId": "subnet-00e4791e45aa3d63a"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_efs.CfnMountTarget",
-                  "version": "2.162.1"
-                }
-              },
-              "EfsMountTarget-PublicSubnet3": {
-                "id": "EfsMountTarget-PublicSubnet3",
-                "path": "EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet3",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
-                  "aws:cdk:cloudformation:props": {
-                    "fileSystemId": {
-                      "Ref": "MariaDbEfs9BCAE6B9"
-                    },
-                    "securityGroups": [
-                      {
-                        "Fn::GetAtt": [
-                          "MariaDbEfsEfsSecurityGroup03B43D86",
-                          "GroupId"
-                        ]
-                      }
-                    ],
-                    "subnetId": "subnet-0d70efc4d8b4a780a"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_efs.CfnMountTarget",
-                  "version": "2.162.1"
-                }
-              },
-              "EfsMountTarget-PublicSubnet4": {
-                "id": "EfsMountTarget-PublicSubnet4",
-                "path": "EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet4",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
-                  "aws:cdk:cloudformation:props": {
-                    "fileSystemId": {
-                      "Ref": "MariaDbEfs9BCAE6B9"
-                    },
-                    "securityGroups": [
-                      {
-                        "Fn::GetAtt": [
-                          "MariaDbEfsEfsSecurityGroup03B43D86",
-                          "GroupId"
-                        ]
-                      }
-                    ],
-                    "subnetId": "subnet-019690c6ff961b555"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_efs.CfnMountTarget",
-                  "version": "2.162.1"
-                }
-              },
-              "EfsMountTarget-PublicSubnet5": {
-                "id": "EfsMountTarget-PublicSubnet5",
-                "path": "EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet5",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
-                  "aws:cdk:cloudformation:props": {
-                    "fileSystemId": {
-                      "Ref": "MariaDbEfs9BCAE6B9"
-                    },
-                    "securityGroups": [
-                      {
-                        "Fn::GetAtt": [
-                          "MariaDbEfsEfsSecurityGroup03B43D86",
-                          "GroupId"
-                        ]
-                      }
-                    ],
-                    "subnetId": "subnet-0c8c74a46d052534c"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_efs.CfnMountTarget",
-                  "version": "2.162.1"
-                }
-              },
-              "EfsMountTarget-PublicSubnet6": {
-                "id": "EfsMountTarget-PublicSubnet6",
-                "path": "EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet6",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
-                  "aws:cdk:cloudformation:props": {
-                    "fileSystemId": {
-                      "Ref": "MariaDbEfs9BCAE6B9"
-                    },
-                    "securityGroups": [
-                      {
-                        "Fn::GetAtt": [
-                          "MariaDbEfsEfsSecurityGroup03B43D86",
-                          "GroupId"
-                        ]
-                      }
-                    ],
-                    "subnetId": "subnet-024216905f19ff2ad"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_efs.CfnMountTarget",
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
                   "version": "2.162.1"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_efs.FileSystem",
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.162.1"
+            }
+          },
+          "ECSTaskSecurityGroup": {
+            "id": "ECSTaskSecurityGroup",
+            "path": "EarnipayCdkStack/ECSTaskSecurityGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "EarnipayCdkStack/ECSTaskSecurityGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "groupDescription": "EarnipayCdkStack/ECSTaskSecurityGroup",
+                    "securityGroupEgress": [
+                      {
+                        "cidrIp": "0.0.0.0/0",
+                        "description": "Allow all outbound traffic by default",
+                        "ipProtocol": "-1"
+                      }
+                    ],
+                    "vpcId": "vpc-03b464097bf99dc53"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                  "version": "2.162.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
               "version": "2.162.1"
             }
           },
@@ -416,7 +346,7 @@
                               {
                                 "Ref": "AWS::URLSuffix"
                               },
-                              "/earnipay/dashboard:latest"
+                              "/earnipay/dashboard:mariadb-staging-latest"
                             ]
                           ]
                         },
@@ -443,7 +373,16 @@
                             "name": "MYSQL_ROOT_PASSWORD",
                             "value": "123"
                           }
-                        ]
+                        ],
+                        "healthCheck": {
+                          "command": [
+                            "CMD-SHELL",
+                            "mysqladmin ping -h localhost"
+                          ],
+                          "interval": 30,
+                          "retries": 2,
+                          "timeout": 5
+                        }
                       },
                       {
                         "essential": true,
@@ -455,7 +394,7 @@
                               {
                                 "Ref": "AWS::URLSuffix"
                               },
-                              "/earnipay/dashboard:latest"
+                              "/earnipay/dashboard:redis-staging-latest"
                             ]
                           ]
                         },
@@ -469,12 +408,31 @@
                             "awslogs-stream-prefix": "Redis",
                             "awslogs-region": "us-east-1"
                           }
+                        },
+                        "healthCheck": {
+                          "command": [
+                            "CMD-SHELL",
+                            "redis-cli ping"
+                          ],
+                          "interval": 30,
+                          "retries": 3,
+                          "timeout": 5
                         }
                       },
                       {
                         "command": [
                           "bash",
                           "/workspace/init.sh"
+                        ],
+                        "dependsOn": [
+                          {
+                            "containerName": "MariaDbContainer",
+                            "condition": "HEALTHY"
+                          },
+                          {
+                            "containerName": "RedisContainer",
+                            "condition": "HEALTHY"
+                          }
                         ],
                         "essential": true,
                         "image": {
@@ -485,7 +443,7 @@
                               {
                                 "Ref": "AWS::URLSuffix"
                               },
-                              "/earnipay/dashboard:latest"
+                              "/earnipay/dashboard:frappe-staging-latest"
                             ]
                           ]
                         },
@@ -518,7 +476,7 @@
                     "cpu": "1024",
                     "executionRoleArn": {
                       "Fn::GetAtt": [
-                        "EarnipayTaskExecutionRole04F989CF",
+                        "ECSTaskRoleF2ADB362",
                         "Arn"
                       ]
                     },
@@ -538,9 +496,8 @@
                       {
                         "name": "mariadb-data",
                         "efsVolumeConfiguration": {
-                          "filesystemId": {
-                            "Ref": "MariaDbEfs9BCAE6B9"
-                          }
+                          "filesystemId": "fs-0e9028aef21a04f20",
+                          "rootDirectory": "/"
                         }
                       }
                     ]
@@ -582,124 +539,6 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
-                  "version": "2.162.1"
-                }
-              },
-              "ExecutionRole": {
-                "id": "ExecutionRole",
-                "path": "EarnipayCdkStack/EarnipayTask/ExecutionRole",
-                "children": {
-                  "ImportExecutionRole": {
-                    "id": "ImportExecutionRole",
-                    "path": "EarnipayCdkStack/EarnipayTask/ExecutionRole/ImportExecutionRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "2.162.1"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "EarnipayCdkStack/EarnipayTask/ExecutionRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "ecs-tasks.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "2.162.1"
-                    }
-                  },
-                  "DefaultPolicy": {
-                    "id": "DefaultPolicy",
-                    "path": "EarnipayCdkStack/EarnipayTask/ExecutionRole/DefaultPolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "EarnipayCdkStack/EarnipayTask/ExecutionRole/DefaultPolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": [
-                                    "ecr:BatchCheckLayerAvailability",
-                                    "ecr:BatchGetImage",
-                                    "ecr:GetDownloadUrlForLayer"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": "arn:aws:ecr:us-east-1:816069156617:repository/earnipay/dashboard"
-                                },
-                                {
-                                  "Action": "ecr:GetAuthorizationToken",
-                                  "Effect": "Allow",
-                                  "Resource": "*"
-                                },
-                                {
-                                  "Action": [
-                                    "logs:CreateLogStream",
-                                    "logs:PutLogEvents"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": [
-                                    {
-                                      "Fn::GetAtt": [
-                                        "EarnipayTaskFrappeContainerLogGroupA9C934B7",
-                                        "Arn"
-                                      ]
-                                    },
-                                    {
-                                      "Fn::GetAtt": [
-                                        "EarnipayTaskMariaDbContainerLogGroup7391B6B2",
-                                        "Arn"
-                                      ]
-                                    },
-                                    {
-                                      "Fn::GetAtt": [
-                                        "EarnipayTaskRedisContainerLogGroup02106D37",
-                                        "Arn"
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "EarnipayTaskExecutionRoleDefaultPolicyC8F142F6",
-                            "roles": [
-                              {
-                                "Ref": "EarnipayTaskExecutionRole04F989CF"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "2.162.1"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "2.162.1"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "2.162.1"
                 }
               },
@@ -794,7 +633,7 @@
                       "maximumPercent": 200,
                       "minimumHealthyPercent": 50
                     },
-                    "desiredCount": 2,
+                    "desiredCount": 1,
                     "enableEcsManagedTags": false,
                     "launchType": "FARGATE",
                     "networkConfiguration": {
@@ -811,7 +650,7 @@
                         "securityGroups": [
                           {
                             "Fn::GetAtt": [
-                              "EarnipayServiceSecurityGroup86380017",
+                              "ECSTaskSecurityGroupE4766430",
                               "GroupId"
                             ]
                           }
@@ -826,38 +665,6 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ecs.CfnService",
-                  "version": "2.162.1"
-                }
-              },
-              "SecurityGroup": {
-                "id": "SecurityGroup",
-                "path": "EarnipayCdkStack/EarnipayService/SecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "EarnipayCdkStack/EarnipayService/SecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "EarnipayCdkStack/EarnipayService/SecurityGroup",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
-                          }
-                        ],
-                        "vpcId": "vpc-03b464097bf99dc53"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                      "version": "2.162.1"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                   "version": "2.162.1"
                 }
               },

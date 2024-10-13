@@ -9,385 +9,45 @@
     "aws:cdk:path": "EarnipayCdkStack/EarnipayCluster/Resource"
    }
   },
-  "MariaDbEfs9BCAE6B9": {
-   "Type": "AWS::EFS::FileSystem",
+  "ECSTaskRoleF2ADB362": {
+   "Type": "AWS::IAM::Role",
    "Properties": {
-    "Encrypted": true,
-    "FileSystemPolicy": {
+    "AssumeRolePolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "elasticfilesystem:ClientRootAccess",
-        "elasticfilesystem:ClientWrite"
-       ],
-       "Condition": {
-        "Bool": {
-         "elasticfilesystem:AccessedViaMountTarget": "true"
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "elasticfilesystem:ClientMount",
+          "elasticfilesystem:ClientWrite"
+         ],
+         "Effect": "Allow",
+         "Resource": "arn:aws:elasticfilesystem:us-east-1:816069156617:file-system/fs-0e9028aef21a04f20"
         }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": "*"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "FileSystemTags": [
-     {
-      "Key": "Name",
-      "Value": "EarnipayCdkStack/MariaDbEfs"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain",
-   "Metadata": {
-    "aws:cdk:path": "EarnipayCdkStack/MariaDbEfs/Resource"
-   }
-  },
-  "MariaDbEfsEfsSecurityGroup03B43D86": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "EarnipayCdkStack/MariaDbEfs/EfsSecurityGroup",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "EarnipayCdkStack/MariaDbEfs"
-     }
-    ],
-    "VpcId": "vpc-03b464097bf99dc53"
-   },
-   "Metadata": {
-    "aws:cdk:path": "EarnipayCdkStack/MariaDbEfs/EfsSecurityGroup/Resource"
-   }
-  },
-  "MariaDbEfsEfsMountTargetPublicSubnet1A7D6721F": {
-   "Type": "AWS::EFS::MountTarget",
-   "Properties": {
-    "FileSystemId": {
-     "Ref": "MariaDbEfs9BCAE6B9"
-    },
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "MariaDbEfsEfsSecurityGroup03B43D86",
-       "GroupId"
-      ]
-     }
-    ],
-    "SubnetId": "subnet-0b871618748442b21"
-   },
-   "Metadata": {
-    "aws:cdk:path": "EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet1"
-   }
-  },
-  "MariaDbEfsEfsMountTargetPublicSubnet284B7B87F": {
-   "Type": "AWS::EFS::MountTarget",
-   "Properties": {
-    "FileSystemId": {
-     "Ref": "MariaDbEfs9BCAE6B9"
-    },
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "MariaDbEfsEfsSecurityGroup03B43D86",
-       "GroupId"
-      ]
-     }
-    ],
-    "SubnetId": "subnet-00e4791e45aa3d63a"
-   },
-   "Metadata": {
-    "aws:cdk:path": "EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet2"
-   }
-  },
-  "MariaDbEfsEfsMountTargetPublicSubnet3AFDE0464": {
-   "Type": "AWS::EFS::MountTarget",
-   "Properties": {
-    "FileSystemId": {
-     "Ref": "MariaDbEfs9BCAE6B9"
-    },
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "MariaDbEfsEfsSecurityGroup03B43D86",
-       "GroupId"
-      ]
-     }
-    ],
-    "SubnetId": "subnet-0d70efc4d8b4a780a"
-   },
-   "Metadata": {
-    "aws:cdk:path": "EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet3"
-   }
-  },
-  "MariaDbEfsEfsMountTargetPublicSubnet49D40B1BB": {
-   "Type": "AWS::EFS::MountTarget",
-   "Properties": {
-    "FileSystemId": {
-     "Ref": "MariaDbEfs9BCAE6B9"
-    },
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "MariaDbEfsEfsSecurityGroup03B43D86",
-       "GroupId"
-      ]
-     }
-    ],
-    "SubnetId": "subnet-019690c6ff961b555"
-   },
-   "Metadata": {
-    "aws:cdk:path": "EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet4"
-   }
-  },
-  "MariaDbEfsEfsMountTargetPublicSubnet5E35DC1AA": {
-   "Type": "AWS::EFS::MountTarget",
-   "Properties": {
-    "FileSystemId": {
-     "Ref": "MariaDbEfs9BCAE6B9"
-    },
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "MariaDbEfsEfsSecurityGroup03B43D86",
-       "GroupId"
-      ]
-     }
-    ],
-    "SubnetId": "subnet-0c8c74a46d052534c"
-   },
-   "Metadata": {
-    "aws:cdk:path": "EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet5"
-   }
-  },
-  "MariaDbEfsEfsMountTargetPublicSubnet6204782E8": {
-   "Type": "AWS::EFS::MountTarget",
-   "Properties": {
-    "FileSystemId": {
-     "Ref": "MariaDbEfs9BCAE6B9"
-    },
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "MariaDbEfsEfsSecurityGroup03B43D86",
-       "GroupId"
-      ]
-     }
-    ],
-    "SubnetId": "subnet-024216905f19ff2ad"
-   },
-   "Metadata": {
-    "aws:cdk:path": "EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet6"
-   }
-  },
-  "EarnipayTaskTaskRole0B0CBA53": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "ecs-tasks.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   },
-   "Metadata": {
-    "aws:cdk:path": "EarnipayCdkStack/EarnipayTask/TaskRole/Resource"
-   }
-  },
-  "EarnipayTask704054F6": {
-   "Type": "AWS::ECS::TaskDefinition",
-   "Properties": {
-    "ContainerDefinitions": [
-     {
-      "Environment": [
-       {
-        "Name": "MYSQL_ROOT_PASSWORD",
-        "Value": "123"
-       }
-      ],
-      "Essential": true,
-      "Image": {
-       "Fn::Join": [
-        "",
-        [
-         "816069156617.dkr.ecr.us-east-1.",
-         {
-          "Ref": "AWS::URLSuffix"
-         },
-         "/earnipay/dashboard:latest"
-        ]
-       ]
+       ],
+       "Version": "2012-10-17"
       },
-      "LogConfiguration": {
-       "LogDriver": "awslogs",
-       "Options": {
-        "awslogs-group": {
-         "Ref": "EarnipayTaskMariaDbContainerLogGroup7391B6B2"
-        },
-        "awslogs-stream-prefix": "MariaDB",
-        "awslogs-region": "us-east-1"
-       }
-      },
-      "MountPoints": [
-       {
-        "ContainerPath": "/var/lib/mysql",
-        "ReadOnly": false,
-        "SourceVolume": "mariadb-data"
-       }
-      ],
-      "Name": "MariaDbContainer"
-     },
-     {
-      "Essential": true,
-      "Image": {
-       "Fn::Join": [
-        "",
-        [
-         "816069156617.dkr.ecr.us-east-1.",
-         {
-          "Ref": "AWS::URLSuffix"
-         },
-         "/earnipay/dashboard:latest"
-        ]
-       ]
-      },
-      "LogConfiguration": {
-       "LogDriver": "awslogs",
-       "Options": {
-        "awslogs-group": {
-         "Ref": "EarnipayTaskRedisContainerLogGroup02106D37"
-        },
-        "awslogs-stream-prefix": "Redis",
-        "awslogs-region": "us-east-1"
-       }
-      },
-      "Name": "RedisContainer"
-     },
-     {
-      "Command": [
-       "bash",
-       "/workspace/init.sh"
-      ],
-      "Environment": [
-       {
-        "Name": "SHELL",
-        "Value": "/bin/bash"
-       }
-      ],
-      "Essential": true,
-      "Image": {
-       "Fn::Join": [
-        "",
-        [
-         "816069156617.dkr.ecr.us-east-1.",
-         {
-          "Ref": "AWS::URLSuffix"
-         },
-         "/earnipay/dashboard:latest"
-        ]
-       ]
-      },
-      "LogConfiguration": {
-       "LogDriver": "awslogs",
-       "Options": {
-        "awslogs-group": {
-         "Ref": "EarnipayTaskFrappeContainerLogGroupA9C934B7"
-        },
-        "awslogs-stream-prefix": "Frappe",
-        "awslogs-region": "us-east-1"
-       }
-      },
-      "Name": "FrappeContainer",
-      "PortMappings": [
-       {
-        "ContainerPort": 8000,
-        "Protocol": "tcp"
-       }
-      ],
-      "WorkingDirectory": "/home/frappe"
-     }
-    ],
-    "Cpu": "1024",
-    "ExecutionRoleArn": {
-     "Fn::GetAtt": [
-      "EarnipayTaskExecutionRole04F989CF",
-      "Arn"
-     ]
-    },
-    "Family": "EarnipayCdkStackEarnipayTaskF178C32A",
-    "Memory": "2048",
-    "NetworkMode": "awsvpc",
-    "RequiresCompatibilities": [
-     "FARGATE"
-    ],
-    "TaskRoleArn": {
-     "Fn::GetAtt": [
-      "EarnipayTaskTaskRole0B0CBA53",
-      "Arn"
-     ]
-    },
-    "Volumes": [
-     {
-      "EFSVolumeConfiguration": {
-       "FilesystemId": {
-        "Ref": "MariaDbEfs9BCAE6B9"
-       }
-      },
-      "Name": "mariadb-data"
+      "PolicyName": "EFSAccessPolicy"
      }
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "EarnipayCdkStack/EarnipayTask/Resource"
+    "aws:cdk:path": "EarnipayCdkStack/ECSTaskRole/Resource"
    }
   },
-  "EarnipayTaskMariaDbContainerLogGroup7391B6B2": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "RetentionInDays": 7
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain",
-   "Metadata": {
-    "aws:cdk:path": "EarnipayCdkStack/EarnipayTask/MariaDbContainer/LogGroup/Resource"
-   }
-  },
-  "EarnipayTaskExecutionRole04F989CF": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "ecs-tasks.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   },
-   "Metadata": {
-    "aws:cdk:path": "EarnipayCdkStack/EarnipayTask/ExecutionRole/Resource"
-   }
-  },
-  "EarnipayTaskExecutionRoleDefaultPolicyC8F142F6": {
+  "ECSTaskRoleDefaultPolicy82FC9293": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -436,15 +96,237 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "EarnipayTaskExecutionRoleDefaultPolicyC8F142F6",
+    "PolicyName": "ECSTaskRoleDefaultPolicy82FC9293",
     "Roles": [
      {
-      "Ref": "EarnipayTaskExecutionRole04F989CF"
+      "Ref": "ECSTaskRoleF2ADB362"
      }
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "EarnipayCdkStack/EarnipayTask/ExecutionRole/DefaultPolicy/Resource"
+    "aws:cdk:path": "EarnipayCdkStack/ECSTaskRole/DefaultPolicy/Resource"
+   }
+  },
+  "ECSTaskSecurityGroupE4766430": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "EarnipayCdkStack/ECSTaskSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": "vpc-03b464097bf99dc53"
+   },
+   "Metadata": {
+    "aws:cdk:path": "EarnipayCdkStack/ECSTaskSecurityGroup/Resource"
+   }
+  },
+  "EarnipayTaskTaskRole0B0CBA53": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EarnipayCdkStack/EarnipayTask/TaskRole/Resource"
+   }
+  },
+  "EarnipayTask704054F6": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Environment": [
+       {
+        "Name": "MYSQL_ROOT_PASSWORD",
+        "Value": "123"
+       }
+      ],
+      "Essential": true,
+      "HealthCheck": {
+       "Command": [
+        "CMD-SHELL",
+        "mysqladmin ping -h localhost"
+       ],
+       "Interval": 30,
+       "Retries": 2,
+       "Timeout": 5
+      },
+      "Image": {
+       "Fn::Join": [
+        "",
+        [
+         "816069156617.dkr.ecr.us-east-1.",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/earnipay/dashboard:mariadb-staging-latest"
+        ]
+       ]
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "EarnipayTaskMariaDbContainerLogGroup7391B6B2"
+        },
+        "awslogs-stream-prefix": "MariaDB",
+        "awslogs-region": "us-east-1"
+       }
+      },
+      "MountPoints": [
+       {
+        "ContainerPath": "/var/lib/mysql",
+        "ReadOnly": false,
+        "SourceVolume": "mariadb-data"
+       }
+      ],
+      "Name": "MariaDbContainer"
+     },
+     {
+      "Essential": true,
+      "HealthCheck": {
+       "Command": [
+        "CMD-SHELL",
+        "redis-cli ping"
+       ],
+       "Interval": 30,
+       "Retries": 3,
+       "Timeout": 5
+      },
+      "Image": {
+       "Fn::Join": [
+        "",
+        [
+         "816069156617.dkr.ecr.us-east-1.",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/earnipay/dashboard:redis-staging-latest"
+        ]
+       ]
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "EarnipayTaskRedisContainerLogGroup02106D37"
+        },
+        "awslogs-stream-prefix": "Redis",
+        "awslogs-region": "us-east-1"
+       }
+      },
+      "Name": "RedisContainer"
+     },
+     {
+      "Command": [
+       "bash",
+       "/workspace/init.sh"
+      ],
+      "DependsOn": [
+       {
+        "Condition": "HEALTHY",
+        "ContainerName": "MariaDbContainer"
+       },
+       {
+        "Condition": "HEALTHY",
+        "ContainerName": "RedisContainer"
+       }
+      ],
+      "Environment": [
+       {
+        "Name": "SHELL",
+        "Value": "/bin/bash"
+       }
+      ],
+      "Essential": true,
+      "Image": {
+       "Fn::Join": [
+        "",
+        [
+         "816069156617.dkr.ecr.us-east-1.",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/earnipay/dashboard:frappe-staging-latest"
+        ]
+       ]
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "EarnipayTaskFrappeContainerLogGroupA9C934B7"
+        },
+        "awslogs-stream-prefix": "Frappe",
+        "awslogs-region": "us-east-1"
+       }
+      },
+      "Name": "FrappeContainer",
+      "PortMappings": [
+       {
+        "ContainerPort": 8000,
+        "Protocol": "tcp"
+       }
+      ],
+      "WorkingDirectory": "/home/frappe"
+     }
+    ],
+    "Cpu": "1024",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "ECSTaskRoleF2ADB362",
+      "Arn"
+     ]
+    },
+    "Family": "EarnipayCdkStackEarnipayTaskF178C32A",
+    "Memory": "2048",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "EarnipayTaskTaskRole0B0CBA53",
+      "Arn"
+     ]
+    },
+    "Volumes": [
+     {
+      "EFSVolumeConfiguration": {
+       "FilesystemId": "fs-0e9028aef21a04f20",
+       "RootDirectory": "/"
+      },
+      "Name": "mariadb-data"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EarnipayCdkStack/EarnipayTask/Resource"
+   }
+  },
+  "EarnipayTaskMariaDbContainerLogGroup7391B6B2": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 7
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "EarnipayCdkStack/EarnipayTask/MariaDbContainer/LogGroup/Resource"
    }
   },
   "EarnipayTaskRedisContainerLogGroup02106D37": {
@@ -479,7 +361,7 @@
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
-    "DesiredCount": 2,
+    "DesiredCount": 1,
     "EnableECSManagedTags": false,
     "LaunchType": "FARGATE",
     "NetworkConfiguration": {
@@ -488,7 +370,7 @@
       "SecurityGroups": [
        {
         "Fn::GetAtt": [
-         "EarnipayServiceSecurityGroup86380017",
+         "ECSTaskSecurityGroupE4766430",
          "GroupId"
         ]
        }
@@ -513,26 +395,6 @@
    ],
    "Metadata": {
     "aws:cdk:path": "EarnipayCdkStack/EarnipayService/Service"
-   }
-  },
-  "EarnipayServiceSecurityGroup86380017": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "EarnipayCdkStack/EarnipayService/SecurityGroup",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "VpcId": "vpc-03b464097bf99dc53"
-   },
-   "DependsOn": [
-    "EarnipayTaskTaskRole0B0CBA53"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "EarnipayCdkStack/EarnipayService/SecurityGroup/Resource"
    }
   },
   "EarnipayServiceTaskCountTargetCD2A0A9E": {
@@ -594,7 +456,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/11R207DMAz9lr1nRisSH8DQeAFpaveOvOAW0zSucmGqovw7SruxjScfH+VcrFSweapgs8KTX+vPfm34CKkJqHtVk5foNCk8+Y9E2kPamugDObVt7QXu0HUY6IC+f6GWLQcWWx78Z8QGZEvuhjtrG3I/rKmILrDRaPBoZtutRBuyIu2gplE8B3HTM3pS1HpIOzbUTD7QUAzut/ciPaDraDaoIDWko+MwvTqJ45J4Q2TFOECqxcxt5rkXw3oq64KyMtJ5SG/S/ZlccFY4joY1lvMwBvEaDdsO0vWgUmYOvmeWcXCoe7Zds+iu2XdEznO78/9ktZ/Cl9iHR9hUUK2+PfPaRRt4IKiX+QsLNk9m5wEAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/12QwU7DMBBEv6V31yhB4gMIgguHKukdbc3WLHG9kb2miiz/O0rS0JbTjJ921mPXunqqdbWBc9yaz37r6KBzJ2B61WLkFAwqOMePjCbq3LgUBYNqjn61rxAsCO4h9i94JE9C7KeB/4S9AHkMN+yS7TD8kMEptNrOgIODm9c2nLwUhSboFgeOJBzGZ4ioCE46t+zm6Kw7dmTG6bi4KVbr3KFJgWR8C5yG5Z4bUJRjG3V+Z/s3sPqiYBgcGZgKQxKOBhx5q/O1YrAo89J7ssg+gOnJ227JXQvegVLmJ1x+vKjdKF/sHx51Vet68x2JtiF5oRPqdtFf0yHpzrkBAAA="
    },
    "Metadata": {
     "aws:cdk:path": "EarnipayCdkStack/CDKMetadata/Default"

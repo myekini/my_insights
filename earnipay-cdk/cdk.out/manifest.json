@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::816069156617:role/cdk-hnb659fds-deploy-role-816069156617-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::816069156617:role/cdk-hnb659fds-cfn-exec-role-816069156617-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-816069156617-us-east-1/5c9ae1e495d6d14610f47a1e1a3ba5e939754319ccf95e0237d39ec76f01ceff.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-816069156617-us-east-1/932270fb5e960ff9f39c13d3483106273c00ac1890055c8c97350466c18b8171.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -41,52 +41,40 @@
             "data": "EarnipayClusterD6AD406F"
           }
         ],
-        "/EarnipayCdkStack/MariaDbEfs/Resource": [
+        "/EarnipayCdkStack/ECSTaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MariaDbEfs9BCAE6B9"
+            "data": "ECSTaskRoleF2ADB362"
           }
         ],
-        "/EarnipayCdkStack/MariaDbEfs/EfsSecurityGroup/Resource": [
+        "/EarnipayCdkStack/ECSTaskRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MariaDbEfsEfsSecurityGroup03B43D86"
+            "data": "ECSTaskRoleDefaultPolicy82FC9293"
           }
         ],
-        "/EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet1": [
+        "/EarnipayCdkStack/ECSTaskSecurityGroup": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "MariaDbEfsEfsMountTargetPublicSubnet1A7D6721F"
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]",
+            "trace": [
+              "Annotations.addMessage (/var/folders/3b/fb4qlzpd6_v_ggmvplln7t380000gn/T/jsii-kernel-Clr4lv/node_modules/aws-cdk-lib/core/lib/annotations.js:1:1608)",
+              "Annotations.addWarningV2 (/var/folders/3b/fb4qlzpd6_v_ggmvplln7t380000gn/T/jsii-kernel-Clr4lv/node_modules/aws-cdk-lib/core/lib/annotations.js:1:825)",
+              "SecurityGroup.addEgressRule (/var/folders/3b/fb4qlzpd6_v_ggmvplln7t380000gn/T/jsii-kernel-Clr4lv/node_modules/aws-cdk-lib/aws-ec2/lib/security-group.js:1:7618)",
+              "/private/var/folders/3b/fb4qlzpd6_v_ggmvplln7t380000gn/T/tmp6afbw6nv/lib/program.js:8874:172",
+              "Kernel._Kernel_ensureSync (/private/var/folders/3b/fb4qlzpd6_v_ggmvplln7t380000gn/T/tmp6afbw6nv/lib/program.js:9499:24)",
+              "Kernel.invoke (/private/var/folders/3b/fb4qlzpd6_v_ggmvplln7t380000gn/T/tmp6afbw6nv/lib/program.js:8874:102)",
+              "KernelHost.processRequest (/private/var/folders/3b/fb4qlzpd6_v_ggmvplln7t380000gn/T/tmp6afbw6nv/lib/program.js:10715:36)",
+              "KernelHost.run (/private/var/folders/3b/fb4qlzpd6_v_ggmvplln7t380000gn/T/tmp6afbw6nv/lib/program.js:10675:22)",
+              "Immediate._onImmediate (/private/var/folders/3b/fb4qlzpd6_v_ggmvplln7t380000gn/T/tmp6afbw6nv/lib/program.js:10676:46)",
+              "process.processImmediate (node:internal/timers:483:21)"
+            ]
           }
         ],
-        "/EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet2": [
+        "/EarnipayCdkStack/ECSTaskSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MariaDbEfsEfsMountTargetPublicSubnet284B7B87F"
-          }
-        ],
-        "/EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet3": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MariaDbEfsEfsMountTargetPublicSubnet3AFDE0464"
-          }
-        ],
-        "/EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet4": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MariaDbEfsEfsMountTargetPublicSubnet49D40B1BB"
-          }
-        ],
-        "/EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet5": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MariaDbEfsEfsMountTargetPublicSubnet5E35DC1AA"
-          }
-        ],
-        "/EarnipayCdkStack/MariaDbEfs/EfsMountTarget-PublicSubnet6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MariaDbEfsEfsMountTargetPublicSubnet6204782E8"
+            "data": "ECSTaskSecurityGroupE4766430"
           }
         ],
         "/EarnipayCdkStack/EarnipayTask/TaskRole/Resource": [
@@ -107,18 +95,6 @@
             "data": "EarnipayTaskMariaDbContainerLogGroup7391B6B2"
           }
         ],
-        "/EarnipayCdkStack/EarnipayTask/ExecutionRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EarnipayTaskExecutionRole04F989CF"
-          }
-        ],
-        "/EarnipayCdkStack/EarnipayTask/ExecutionRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EarnipayTaskExecutionRoleDefaultPolicyC8F142F6"
-          }
-        ],
         "/EarnipayCdkStack/EarnipayTask/RedisContainer/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -135,12 +111,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EarnipayServiceFD4C61E8"
-          }
-        ],
-        "/EarnipayCdkStack/EarnipayService/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EarnipayServiceSecurityGroup86380017"
           }
         ],
         "/EarnipayCdkStack/EarnipayService/TaskCount/Target/Resource": [
